@@ -6,8 +6,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./Utils.sol";
 
-address constant USDC = 0x1291070C5f838DCCDddc56312893d3EfE9B372a8;
-
 contract MultiMarket is Ownable, Utils {
     // Event emitted when a deposit is made
     event Deposit(address indexed user, uint amount);
@@ -15,7 +13,7 @@ contract MultiMarket is Ownable, Utils {
     event Withdraw(address indexed user, uint amount);
 
     // ERC20 token used as currency in the contract
-    IERC20 public currencyToken;
+    IERC20 public immutable currencyToken;
 
     mapping(address => uint) public balances;
 
@@ -39,8 +37,8 @@ contract MultiMarket is Ownable, Utils {
     function deposit(uint _amount) external {
         require(_amount > 0, "Amount must be greater than 0");
 
-        uint allowance = currencyToken.allowance(msg.sender, address(this));
-        require(allowance >= _amount, "Allowance is not sufficient");
+        // uint allowance = currencyToken.allowance(msg.sender, address(this));
+        // require(allowance >= _amount, "Allowance is not sufficient");
 
         bool success = currencyToken.transferFrom(
             msg.sender,
