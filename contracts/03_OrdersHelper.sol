@@ -12,6 +12,9 @@ contract OrdersHelper is EventFactory {
         uint orderIdentifierIndex
     );
 
+    mapping(BetOutcome => BetOutcome) private oppositeBetOutcome;
+    mapping(OrderType => OrderType) private oppositeOrderType;
+
     constructor(
         address _currencyToken,
         uint16 _decimals,
@@ -26,7 +29,13 @@ contract OrdersHelper is EventFactory {
             _eventCreationFee,
             _marketCreationFee
         )
-    {}
+    {
+        oppositeBetOutcome[BetOutcome.Yes] = BetOutcome.No;
+        oppositeBetOutcome[BetOutcome.No] = BetOutcome.Yes;
+
+        oppositeOrderType[OrderType.Buy] = OrderType.Sell;
+        oppositeOrderType[OrderType.Sell] = OrderType.Buy;
+    }
 
     function placeOrder(
         uint _eventIndex,
@@ -79,6 +88,27 @@ contract OrdersHelper is EventFactory {
                 _shares
             );
         }
+
+        emit LimitOrderPlaced(
+            msg.sender,
+            _eventIndex,
+            _marketIndex,
+            events[_eventIndex]
+                .markets[_marketIndex]
+                .orderBook
+                .orderIdentifiers
+                .length - 1
+        );
+
+        // _matchOrder(
+        //     _eventIndex,
+        //     _marketIndex,
+        //     events[_eventIndex]
+        //         .markets[_marketIndex]
+        //         .orderBook
+        //         .orderIdentifiers
+        //         .length - 1
+        // );
     }
 
     function _placeLimitBuyOrder(
@@ -127,17 +157,6 @@ contract OrdersHelper is EventFactory {
             .userActiveOrdersCount[msg.sender]++;
 
         reservedBalances[msg.sender] += _price * _shares;
-
-        emit LimitOrderPlaced(
-            msg.sender,
-            _eventIndex,
-            _marketIndex,
-            events[_eventIndex]
-                .markets[_marketIndex]
-                .orderBook
-                .orderIdentifiers
-                .length - 1
-        );
     }
 
     function _placeLimitSellOrder(
@@ -193,16 +212,5 @@ contract OrdersHelper is EventFactory {
         events[_eventIndex].markets[_marketIndex].reservedShares[_betOutcome][
                 msg.sender
             ] += _shares;
-
-        emit LimitOrderPlaced(
-            msg.sender,
-            _eventIndex,
-            _marketIndex,
-            events[_eventIndex]
-                .markets[_marketIndex]
-                .orderBook
-                .orderIdentifiers
-                .length - 1
-        );
     }
 }
