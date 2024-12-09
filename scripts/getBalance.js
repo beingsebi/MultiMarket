@@ -6,7 +6,7 @@ require('dotenv').config();
 // Contract and ABI
 const contractAddress = process.env.CONTRACT_ADDRESS;
 const contractABI = JSON.parse(
-  fs.readFileSync('./artifacts/contracts/MultiMarket.sol/MultiMarket.json')
+  fs.readFileSync('./artifacts/contracts/02_EventFactory.sol/EventFactory.json')
 ).abi;
 
 // Connect to the Ethereum network using Alchemy
@@ -25,6 +25,6 @@ async function getBalance(address) {
 }
 
 // Example: Get the balance of a specific address
-const addressToCheck = "0x62640711D14Cdf14D9a097D8D0E96fdebcA6244b";  
+const addressToCheck = "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199";  
 
 getBalance(addressToCheck);

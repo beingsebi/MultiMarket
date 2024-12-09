@@ -4,7 +4,7 @@ const fs = require("fs");
 // Contract and ABI
 const contractAddress = process.env.CONTRACT_ADDRESS;
 const contractABI = JSON.parse(
-  fs.readFileSync('./artifacts/contracts/MultiMarket.sol/MultiMarket.json')
+  fs.readFileSync('./artifacts/contracts/02_EventFactory.sol/EventFactory.json')
 ).abi;
 
 // Connect to the Ethereum network using Alchemy

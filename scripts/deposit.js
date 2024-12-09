@@ -6,7 +6,7 @@ require('dotenv').config();
 // Contract and ABI
 const contractAddress = process.env.CONTRACT_ADDRESS;
 const contractABI = JSON.parse(
-  fs.readFileSync('./artifacts/contracts/MultiMarket.sol/MultiMarket.json')
+  fs.readFileSync('./artifacts/contracts/02_EventFactory.sol/EventFactory.json')
 ).abi;
 
 
@@ -47,4 +47,4 @@ async function deposit(amount) {
 }
 
 // Example: deposit 200 USDC
-deposit(ethers.utils.parseUnits("200", 6)); // USDC typically has 6 decimal places
+deposit(ethers.utils.parseUnits("300", 6)); // USDC typically has 6 decimal places
