@@ -7,8 +7,9 @@ async function main() {
   // usdc address, decimals,granularity,fee
   var decimals = 6;
   var granularity = 3;
-  var fee = 20 * (10 ** decimals);
-  const multiMarket = await MultiMarket.deploy(usdcAddress, decimals, granularity, fee);
+  var eventFee = 30 * (10 ** decimals);
+  var marketFee = 10 * (10 ** decimals);
+  const multiMarket = await MultiMarket.deploy(usdcAddress, decimals, granularity, eventFee, marketFee);
 
   console.log("Contract Deployed to Address:", multiMarket.address);
 }

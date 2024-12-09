@@ -20,7 +20,7 @@ const eventFactoryContract = new ethers.Contract(contractAddress, contractABI, w
 async function getEventDetails(eventIndex) {
   try {
     console.log(`Fetching details for event index ${eventIndex}...`);
-    const eventDetails = await eventFactoryContract.getEventWithMarkets(eventIndex);
+    const eventDetails = await eventFactoryContract.getEvent(eventIndex);
 
     const [eventTitle, eventDescription, marketTitles, marketDescriptions] = eventDetails;
 

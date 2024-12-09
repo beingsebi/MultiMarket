@@ -12,7 +12,17 @@ contract EventFactory is TokenHolder {
         string description
     );
 
+    event MarketCreated(
+        address indexed admin,
+        uint eventIndex,
+        uint marketIndex,
+        string title,
+        string description
+    );
+
+    // includes first market fee too
     uint public eventCreationFee;
+    uint public marketCreationFee;
 
     enum BetOutcome {
         Yes,
@@ -66,9 +76,11 @@ contract EventFactory is TokenHolder {
         address _currencyToken,
         uint16 _decimals,
         uint16 _granularity,
-        uint _eventCreationFee
+        uint _eventCreationFee,
+        uint _marketCreationFee
     ) TokenHolder(_currencyToken, _decimals, _granularity) {
         eventCreationFee = _eventCreationFee;
+        marketCreationFee = _marketCreationFee;
         contractBalance = 0;
     }
 
@@ -101,9 +113,47 @@ contract EventFactory is TokenHolder {
             _eventTitle,
             _eventDescription
         );
+
+        emit MarketCreated(
+            msg.sender,
+            events.length - 1,
+            0,
+            _firstMarketTitle,
+            _firstMarketDescription
+        );
     }
 
-    function getEventWithMarkets(
+    function addMarket(
+        uint _eventIndex,
+        string memory _marketTitle,
+        string memory _marketDescription
+    ) external {
+        require(
+            eventToAdmin[_eventIndex] == msg.sender,
+            "Only the event admin can add markets"
+        );
+        require(
+            _getBalance(msg.sender) >= marketCreationFee,
+            "Insufficient balance"
+        );
+
+        Market storage market = events[_eventIndex].markets.push();
+        market.title = _marketTitle;
+        market.description = _marketDescription;
+
+        balances[msg.sender] -= marketCreationFee;
+        contractBalance += marketCreationFee;
+
+        emit MarketCreated(
+            msg.sender,
+            _eventIndex,
+            events[_eventIndex].markets.length - 1,
+            _marketTitle,
+            _marketDescription
+        );
+    }
+
+    function getEvent(
         uint _eventIndex
     )
         external
@@ -121,6 +171,16 @@ contract EventFactory is TokenHolder {
         }
 
         return (event_.title, event_.description, titles, descriptions);
+    }
+
+    function getMarket(
+        uint _eventIndex,
+        uint _marketIndex
+    ) external view returns (string memory, string memory) {
+        return (
+            events[_eventIndex].markets[_marketIndex].title,
+            events[_eventIndex].markets[_marketIndex].description
+        );
     }
 }
 // function _placeLimitBuyOrder(
