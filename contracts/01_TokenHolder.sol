@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.8.28;
+pragma solidity >=0.8.28 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./Utils.sol";
+import "./00_Utils.sol";
 
-contract MultiMarket is Ownable, Utils {
+contract TokenHolder is Utils {
     // Event emitted when a deposit is made
     event Deposit(address indexed user, uint amount);
     // Event emitted when a withdrawal is made
@@ -15,19 +15,24 @@ contract MultiMarket is Ownable, Utils {
     // ERC20 token used as currency in the contract
     IERC20 public immutable currencyToken;
 
+    // Decimals of the currency token
+    // x / 10^decimals = x tokens
+    uint16 public immutable decimals;
+
     mapping(address => uint) public balances;
 
     /**
      * @dev Constructor that sets the currency token and initializes the Ownable contract.
      * @param _currencyToken Address of the ERC20 token to be used as currency.
      */
-    constructor(address _currencyToken) Ownable(msg.sender) {
+    constructor(address _currencyToken, uint16 _decimals) {
         require(_currencyToken != address(0), "Invalid currency address");
         require(
             _isERC20(_currencyToken),
             "Address is not a valid ERC-20 token"
         );
         currencyToken = IERC20(_currencyToken);
+        decimals = _decimals;
     }
 
     /**
@@ -66,5 +71,14 @@ contract MultiMarket is Ownable, Utils {
         balances[msg.sender] -= _amount;
 
         emit Withdraw(msg.sender, _amount);
+    }
+
+    /**
+     * @dev Function to get the balance of a user in the contract.
+     * @param _user The address of the user.
+     * @return The balance of the user.
+     */
+    function _getBalance(address _user) internal view returns (uint) {
+        return balances[_user];
     }
 }
