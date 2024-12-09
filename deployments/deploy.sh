@@ -23,3 +23,7 @@ npx hardhat run scripts/createEvent.js --network localhost
 
 
 npx hardhat run scripts/getEvent.js --network localhost
+
+npx hardhat run scripts/placeLimitBuyOrder.js --network localhost
+
+npx hardhat run scripts/placeLimitSellOrder.js --network localhost

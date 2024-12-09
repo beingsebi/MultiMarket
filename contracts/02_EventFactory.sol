@@ -5,24 +5,11 @@ pragma solidity >=0.8.28 <0.9.0;
 import "./01_TokenHolder.sol";
 
 contract EventFactory is TokenHolder {
-    event EventCreated(
-        address indexed admin,
-        uint eventIndex,
-        string title,
-        string description
-    );
-
-    event MarketCreated(
-        address indexed admin,
-        uint eventIndex,
-        uint marketIndex,
-        string title,
-        string description
-    );
-
-    // includes first market fee too
-    uint public eventCreationFee;
+    uint public eventCreationFee; // includes first market's fee too
     uint public marketCreationFee;
+    Event[] public events;
+    mapping(uint => address) public eventToAdmin;
+    mapping(address => uint) public adminEventCount;
 
     enum BetOutcome {
         Yes,
@@ -35,11 +22,12 @@ contract EventFactory is TokenHolder {
     }
 
     struct OrderIdentifier {
+        uint eventIndex;
+        uint marketIndex;
         BetOutcome betOutcome;
         OrderType orderType;
         uint price;
-        uint indexInOrderBookArray;
-        uint eventIndex;
+        uint orderIndex;
     }
 
     struct Order {
@@ -60,6 +48,8 @@ contract EventFactory is TokenHolder {
         string title;
         string description;
         OrderBook orderBook;
+        mapping(BetOutcome => mapping(address => uint)) shares;
+        mapping(BetOutcome => mapping(address => uint)) reservedShares;
     }
 
     struct Event {
@@ -68,9 +58,20 @@ contract EventFactory is TokenHolder {
         Market[] markets;
     }
 
-    Event[] public events;
-    mapping(uint => address) public eventToAdmin;
-    mapping(address => uint) public adminEventCount;
+    event EventCreated(
+        address indexed admin,
+        uint eventIndex,
+        string title,
+        string description
+    );
+
+    event MarketCreated(
+        address indexed admin,
+        uint eventIndex,
+        uint marketIndex,
+        string title,
+        string description
+    );
 
     constructor(
         address _currencyToken,
@@ -81,9 +82,17 @@ contract EventFactory is TokenHolder {
     ) TokenHolder(_currencyToken, _decimals, _granularity) {
         eventCreationFee = _eventCreationFee;
         marketCreationFee = _marketCreationFee;
-        contractBalance = 0;
     }
 
+    /**
+     * @notice Creates a new event with an initial market.
+     * @dev Deducts the event creation fee from the sender's balance and adds it to the contract balance.
+     *      Emits `EventCreated` and `MarketCreated` events.
+     * @param _eventTitle The title of the new event.
+     * @param _eventDescription A description of the new event.
+     * @param _firstMarketTitle The title of the initial market associated with the event.
+     * @param _firstMarketDescription A description of the initial market
+     */
     function createEvent(
         string memory _eventTitle,
         string memory _eventDescription,
@@ -91,12 +100,14 @@ contract EventFactory is TokenHolder {
         string memory _firstMarketDescription
     ) external {
         require(
-            _getBalance(msg.sender) >= eventCreationFee,
+            balances[msg.sender] >= eventCreationFee,
             "Insufficient balance"
         );
+
         Event storage event_ = events.push();
         event_.title = _eventTitle;
         event_.description = _eventDescription;
+
         eventToAdmin[events.length - 1] = msg.sender;
         adminEventCount[msg.sender]++;
 
@@ -123,6 +134,13 @@ contract EventFactory is TokenHolder {
         );
     }
 
+    /**
+     * @notice Adds a new market to an existing event.
+     * @dev Only the event admin can add markets. Deducts the market creation fee from the sender's balance.
+     * @param _eventIndex The index of the event to which the market is added.
+     * @param _marketTitle The title of the new market.
+     * @param _marketDescription A description of the new market.
+     */
     function addMarket(
         uint _eventIndex,
         string memory _marketTitle,
@@ -133,7 +151,7 @@ contract EventFactory is TokenHolder {
             "Only the event admin can add markets"
         );
         require(
-            _getBalance(msg.sender) >= marketCreationFee,
+            balances[msg.sender] >= marketCreationFee,
             "Insufficient balance"
         );
 
@@ -153,6 +171,11 @@ contract EventFactory is TokenHolder {
         );
     }
 
+    /**
+     * @notice Retrieves details of a specific event and its markets.
+     * @param _eventIndex The index of the event to retrieve.
+     * @return The event title, description, and arrays of market titles and descriptions.
+     */
     function getEvent(
         uint _eventIndex
     )
@@ -173,6 +196,12 @@ contract EventFactory is TokenHolder {
         return (event_.title, event_.description, titles, descriptions);
     }
 
+    /**
+     * @notice Retrieves details of a specific market.
+     * @param _eventIndex The index of the event to which the market belongs.
+     * @param _marketIndex The index of the market to retrieve.
+     * @return The market title and description.
+     */
     function getMarket(
         uint _eventIndex,
         uint _marketIndex
@@ -183,99 +212,3 @@ contract EventFactory is TokenHolder {
         );
     }
 }
-// function _placeLimitBuyOrder(
-//     BetOutcome _betOutcome,
-//     OrderType _orderType,
-//     uint _price,
-//     uint _shares
-// ) internal {
-//     require(
-//         _getBalance(msg.sender) >= _shares * _price,
-//         "Insufficient balance"
-//     );
-
-//     OrderIdentifier memory orderIdentifier = OrderIdentifier(
-//         _betOutcome,
-//         _orderType,
-//         _price,
-//         orderBook[_betOutcome][_orderType][_price].length
-//     );
-//     orderIdentifiers.push(orderIdentifier);
-
-//     Order memory order = Order(msg.sender, _shares, block.timestamp, true);
-
-//     orderBook[_betOutcome][_orderType][_price].orders.push(order);
-//     userActiveOrdersCount[msg.sender]++;
-
-//     emit OrderPlaced(
-//         msg.sender,
-//         orderIdentifiers.length - 1,
-//         _betOutcome,
-//         _orderType,
-//         _price,
-//         _shares
-//     );
-
-//     // do order matching
-// }
-
-// function placeLimitOrder(
-//     BetOutcome _betOutcome,
-//     OrderType _orderType,
-//     uint _price,
-//     uint _shares
-// ) external {
-//     require(_shares > 0, "Shares must be greater than 0");
-//     require(
-//         _price > 0 && _price < 10 ** decimals,
-//         "Price must be between 0 and 1 (* 10^decimals)"
-//     );
-//     require(
-//         _price % (10 ** granularity) == 0,
-//         "Price must be a multiple of 10^granularity"
-//     );
-
-//     require(
-//         _betOutcome == BetOutcome.Yes || _betOutcome == BetOutcome.No,
-//         "Invalid bet outcome"
-//     );
-//     require(
-//         _orderType == OrderType.Buy || _orderType == OrderType.Sell,
-//         "Invalid order type"
-//     );
-
-//     if (_orderType == OrderType.Buy) {
-//         _placeLimitBuyOrder(_betOutcome, _orderType, _price, _shares);
-//     } else if (_orderType == OrderType.Sell) {
-//         _placeLimitSellOrder(_betOutcome, _orderType, _price, _shares);
-//     }
-// }
-
-// function getUserOrders() external view returns (OrderIdentifier[] memory) {
-//     OrderIdentifier[] memory userOrders = new OrderIdentifier[](
-//         userActiveOrdersCount[msg.sender]
-//     );
-
-//     uint userOrdersIndex = 0;
-//     for (
-//         uint i = firstActive;
-//         i < orderIdentifiers.length &&
-//             userOrdersIndex < userActiveOrdersCount[msg.sender];
-//         i++
-//     ) {
-//         OrderIdentifier memory orderIdentifier = orderIdentifiers[i];
-//         Order memory order = orderBook[orderIdentifier.betOutcome][
-//             orderIdentifier.orderType
-//         ][orderIdentifier.price].orders[
-//                 orderIdentifier.indexInOrderBookArray
-//             ];
-
-//         if (order.user == msg.sender && order.isActive) {
-//             userOrders[userOrdersIndex] = orderIdentifier;
-//             userOrdersIndex++;
-//         }
-//     }
-
-//     return userOrders;
-// }
-// }
