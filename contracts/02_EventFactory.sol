@@ -40,7 +40,7 @@ contract EventFactory is TokenHolder {
     struct OrderBook {
         OrderIdentifier[] orderIdentifiers;
         //// price 1 => 10^-decimals tokens   |   [Yes/No][Buy/Sell][Price]
-        mapping(BetOutcome => mapping(OrderType => mapping(uint => Order[]))) orderBook;
+        mapping(BetOutcome => mapping(OrderType => mapping(uint => Order[]))) ob;
         mapping(address => uint) userActiveOrdersCount;
     }
 
@@ -48,6 +48,7 @@ contract EventFactory is TokenHolder {
         string title;
         string description;
         OrderBook orderBook;
+        uint issuedShares;
         mapping(BetOutcome => mapping(address => uint)) shares;
         mapping(BetOutcome => mapping(address => uint)) reservedShares;
     }

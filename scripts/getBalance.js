@@ -6,7 +6,7 @@ require('dotenv').config();
 // Contract and ABI
 const contractAddress = process.env.CONTRACT_ADDRESS;
 const contractABI = JSON.parse(
-  fs.readFileSync('./artifacts/contracts/02_EventFactory.sol/EventFactory.json')
+  fs.readFileSync(process.env.CONTRACT_ABI_PATH)
 ).abi;
 
 // Connect to the Ethereum network using Alchemy

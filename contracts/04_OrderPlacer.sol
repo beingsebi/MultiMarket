@@ -2,18 +2,15 @@
 
 pragma solidity >=0.8.28 <0.9.0;
 
-import "./02_EventFactory.sol";
+import "./03_OrderMatcher.sol";
 
-contract OrdersHelper is EventFactory {
+contract OrderPlacer is OrderMatcher {
     event LimitOrderPlaced(
         address indexed user,
         uint indexed eventIndex,
         uint marketIndex,
         uint orderIdentifierIndex
     );
-
-    mapping(BetOutcome => BetOutcome) private oppositeBetOutcome;
-    mapping(OrderType => OrderType) private oppositeOrderType;
 
     constructor(
         address _currencyToken,
@@ -22,20 +19,14 @@ contract OrdersHelper is EventFactory {
         uint _eventCreationFee,
         uint _marketCreationFee
     )
-        EventFactory(
+        OrderMatcher(
             _currencyToken,
             _decimals,
             _granularity,
             _eventCreationFee,
             _marketCreationFee
         )
-    {
-        oppositeBetOutcome[BetOutcome.Yes] = BetOutcome.No;
-        oppositeBetOutcome[BetOutcome.No] = BetOutcome.Yes;
-
-        oppositeOrderType[OrderType.Buy] = OrderType.Sell;
-        oppositeOrderType[OrderType.Sell] = OrderType.Buy;
-    }
+    {}
 
     function placeOrder(
         uint _eventIndex,
@@ -100,15 +91,30 @@ contract OrdersHelper is EventFactory {
                 .length - 1
         );
 
-        // _matchOrder(
-        //     _eventIndex,
-        //     _marketIndex,
-        //     events[_eventIndex]
-        //         .markets[_marketIndex]
-        //         .orderBook
-        //         .orderIdentifiers
-        //         .length - 1
-        // );
+        uint _indexInOB = events[_eventIndex]
+        .markets[_marketIndex]
+        .orderBook
+        .ob[_betOutcome][_orderType][_price].length - 1;
+
+        if (_orderType == OrderType.Buy) {
+            _tryMatchBuyOrder(
+                _eventIndex,
+                _marketIndex,
+                _betOutcome,
+                _price,
+                _indexInOB,
+                _shares
+            );
+        } else if (_orderType == OrderType.Sell) {
+            // _tryMatchSellOrder(
+            //     _eventIndex,
+            //     _marketIndex,
+            //     _betOutcome,
+            //     _price,
+            //     _indexInOB,
+            //     _shares
+            // );
+        }
     }
 
     function _placeLimitBuyOrder(
@@ -149,7 +155,7 @@ contract OrdersHelper is EventFactory {
         events[_eventIndex]
         .markets[_marketIndex]
         .orderBook
-        .orderBook[_betOutcome][_orderType][_price].push(order);
+        .ob[_betOutcome][_orderType][_price].push(order);
 
         events[_eventIndex]
             .markets[_marketIndex]
@@ -202,7 +208,7 @@ contract OrdersHelper is EventFactory {
         events[_eventIndex]
         .markets[_marketIndex]
         .orderBook
-        .orderBook[_betOutcome][_orderType][_price].push(order);
+        .ob[_betOutcome][_orderType][_price].push(order);
 
         events[_eventIndex]
             .markets[_marketIndex]
@@ -212,5 +218,99 @@ contract OrdersHelper is EventFactory {
         events[_eventIndex].markets[_marketIndex].reservedShares[_betOutcome][
                 msg.sender
             ] += _shares;
+    }
+
+    function _tryMatchBuyOrder(
+        uint _eventIndex,
+        uint _marketIndex,
+        BetOutcome _betOutcome,
+        uint _price,
+        uint _indexInOB,
+        uint _shares
+    ) private {
+        // match buy order with sell order
+        for (
+            uint _tryPrice = 1;
+            _shares > 0 && _tryPrice < _price;
+            _tryPrice++
+        ) {
+            for (
+                uint _tryIndexInOb = 0;
+                _shares > 0 &&
+                    _tryIndexInOb <
+                    events[_eventIndex]
+                    .markets[_marketIndex]
+                    .orderBook
+                    .ob[_betOutcome][OrderType.Sell][_tryPrice].length;
+                _tryIndexInOb++
+            ) {
+                Order storage order = events[_eventIndex]
+                    .markets[_marketIndex]
+                    .orderBook
+                    .ob[_betOutcome][OrderType.Sell][_tryPrice][_tryIndexInOb];
+
+                if (order.isActive) {
+                    uint _matchedShares = _shares < order.shares
+                        ? _shares
+                        : order.shares;
+
+                    _executeDirectTrade(
+                        _eventIndex,
+                        _marketIndex,
+                        _betOutcome,
+                        _price,
+                        _indexInOB,
+                        _tryPrice,
+                        _tryIndexInOb,
+                        _matchedShares,
+                        _tryPrice
+                    );
+
+                    _shares -= _matchedShares;
+                }
+            }
+        }
+
+        //match buy order with buy order of opposite outcome
+        BetOutcome _oppositeBetOutcome = oppositeBetOutcome[_betOutcome];
+        uint _oppositePrice = 10 ** decimals - _price;
+
+        for (
+            uint _tryIndexInOb = 0;
+            _shares > 0 &&
+                _tryIndexInOb <
+                events[_eventIndex]
+                .markets[_marketIndex]
+                .orderBook
+                .ob[_oppositeBetOutcome][OrderType.Sell][_oppositePrice].length;
+            _tryIndexInOb++
+        ) {
+            Order storage order = events[_eventIndex]
+                .markets[_marketIndex]
+                .orderBook
+                .ob[_oppositeBetOutcome][OrderType.Sell][_oppositePrice][
+                    _tryIndexInOb
+                ];
+
+            if (order.isActive) {
+                uint _matchedShares = _shares < order.shares
+                    ? _shares
+                    : order.shares;
+
+                _executeGeneratingSharesTrade(
+                    _eventIndex,
+                    _marketIndex,
+                    _betOutcome,
+                    _price,
+                    _indexInOB,
+                    _oppositeBetOutcome,
+                    _oppositePrice,
+                    _tryIndexInOb,
+                    _matchedShares
+                );
+
+                _shares -= _matchedShares;
+            }
+        }
     }
 }
