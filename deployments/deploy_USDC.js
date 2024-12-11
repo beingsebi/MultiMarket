@@ -4,7 +4,9 @@ async function main() {
   const acc = "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199";
   const usdc = await USDC.deploy(acc);
 
-  console.log("Contract Deployed to Address:", usdc.address);
+  console.log("USDC Contract Deployed to Address:", usdc.address);
+  console.log(' ');
+
 }
 
 main()

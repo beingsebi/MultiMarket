@@ -14,8 +14,8 @@ module.exports = {
       accounts: [`0x${PRIVATE_KEY}`]
     }
   },
-  contractSizer: {
-    runOnCompile: true, // Automatically check sizes when compiling
-    disambiguatePaths: false, // Show full paths for disambiguation
-  },
+  // contractSizer: {
+  //   runOnCompile: true, // Automatically check sizes when compiling
+  //   disambiguatePaths: false, // Show full paths for disambiguation
+  // },
 }

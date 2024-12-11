@@ -1,22 +1,32 @@
 async function main() {
-  const MultiMarket = await ethers.getContractFactory("OrderPlacer");
+  const MultiMarket = await ethers.getContractFactory("EventHelper");
 
-  // const usdcAddress = process.env.USDC_ADDRESS;
-  const usdcAddress="0x5FbDB2315678afecb367f032d93F642f64180aa3"
+  const usdcAddress = process.env.USDC_ADDRESS;
+  const eventFactoryAddress = process.env.EVENT_FACTORY_ADDRESS;
 
   // usdc address, decimals,granularity,fee
   var decimals = 6;
   var granularity = 3;
-  var eventFee = 30 * (10 ** decimals);
-  var marketFee = 10 * (10 ** decimals);
-  const multiMarket = await MultiMarket.deploy(usdcAddress, decimals, granularity, eventFee, marketFee);
+  var eventFee = 30 * 10 ** decimals;
+  var marketFee = 10 * 10 ** decimals;
+
+  const multiMarket = await MultiMarket.deploy(
+    usdcAddress,
+    eventFactoryAddress,
+    decimals,
+    granularity,
+    eventFee,
+    marketFee
+  );
 
   console.log("Contract Deployed to Address:", multiMarket.address);
+  console.log(' ');
+
 }
 
 main()
   .then(() => process.exit(0))
-  .catch(error => {
+  .catch((error) => {
     console.error(error);
     process.exit(1);
   });

@@ -4,19 +4,19 @@ pragma solidity >=0.8.28 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./00_Utils.sol";
 
-contract TokenHolder is Utils, Ownable {
+contract TokenHolder is Ownable {
     // ERC20 token used as currency in the contract
-    IERC20 public immutable currencyToken;
+    IERC20 public immutable currencyTokenContract;
     uint public contractBalance;
     // Decimals of the currency token
     // x / 10^decimals = x tokens
     uint16 public immutable decimals;
     // 3 => minPrice = 1e-3 tokens
     uint16 public immutable granularity;
-    mapping(address => uint) public balances;
+    mapping(address => uint) public freeBalances;
     mapping(address => uint) public reservedBalances;
+    //balance=reserved+free
 
     // Event emitted when a deposit is made
     event Deposit(address indexed user, uint amount);
@@ -26,6 +26,8 @@ contract TokenHolder is Utils, Ownable {
     /**
      * @dev Constructor that sets the currency token and initializes the Ownable contract.
      * @param _currencyToken Address of the ERC20 token to be used as currency.
+     * @param _decimals Decimals of the currency token.
+     * @param _granularity Granularity of the currency token when placing orders.
      */
     constructor(
         address _currencyToken,
@@ -37,7 +39,10 @@ contract TokenHolder is Utils, Ownable {
             _isERC20(_currencyToken),
             "Address is not a valid ERC-20 token"
         );
-        currencyToken = IERC20(_currencyToken);
+        require(_granularity >= 0, "Granularity must be >= 0");
+        require(_decimals >= _granularity, "Decimals must be >= granularity");
+
+        currencyTokenContract = IERC20(_currencyToken);
         decimals = _decimals;
         granularity = _granularity;
     }
@@ -48,14 +53,15 @@ contract TokenHolder is Utils, Ownable {
      */
     function deposit(uint _amount) external {
         require(_amount > 0, "Amount must be greater than 0");
-        bool success = currencyToken.transferFrom(
+        bool success = currencyTokenContract.transferFrom(
             msg.sender,
             address(this),
             _amount
         );
+
         require(success, "Transfer failed");
 
-        balances[msg.sender] += _amount;
+        freeBalances[msg.sender] += _amount;
 
         emit Deposit(msg.sender, _amount);
     }
@@ -66,16 +72,16 @@ contract TokenHolder is Utils, Ownable {
      */
     function withdraw(uint _amount) external {
         require(_amount > 0, "Amount must be greater than 0");
-        require(balances[msg.sender] >= _amount, "Insufficient balance");
+        require(freeBalances[msg.sender] >= _amount, "Insufficient balance");
         require(
-            balances[msg.sender] - reservedBalances[msg.sender] >= _amount,
+            freeBalances[msg.sender] - reservedBalances[msg.sender] >= _amount,
             "Funds are reserved in orders. Cancel orders first."
         );
 
-        bool success = currencyToken.transfer(msg.sender, _amount);
+        bool success = currencyTokenContract.transfer(msg.sender, _amount);
         require(success, "Transfer failed");
 
-        balances[msg.sender] -= _amount;
+        freeBalances[msg.sender] -= _amount;
 
         emit Withdraw(msg.sender, _amount);
     }
@@ -94,7 +100,7 @@ contract TokenHolder is Utils, Ownable {
     function donateCurrency(uint _amount) external {
         require(_amount > 0, "Amount must be greater than 0");
 
-        bool success = currencyToken.transferFrom(
+        bool success = currencyTokenContract.transferFrom(
             msg.sender,
             address(this),
             _amount
@@ -121,8 +127,20 @@ contract TokenHolder is Utils, Ownable {
         require(_amount > 0, "Amount must be greater than 0");
         require(contractBalance >= _amount, "Insufficient balance");
 
-        bool success = currencyToken.transfer(owner(), _amount);
+        bool success = currencyTokenContract.transfer(owner(), _amount);
         require(success, "Transfer failed");
         contractBalance -= _amount;
+    }
+
+    function _isERC20(address _tokenAddress) internal view returns (bool) {
+        try IERC20(_tokenAddress).totalSupply() returns (uint) {
+            try IERC20(_tokenAddress).balanceOf(address(this)) returns (uint) {
+                return true;
+            } catch {
+                return false;
+            }
+        } catch {
+            return false;
+        }
     }
 }

@@ -44,7 +44,8 @@ async function deposit(amount) {
   } catch (error) {
     console.error("Error during deposit:", error);
   }
+  console.log(' ');
 }
 
-// Example: deposit 200 USDC
-deposit(ethers.utils.parseUnits("300", 6)); // USDC typically has 6 decimal places
+// Example: deposit 1000 USDC
+deposit(ethers.utils.parseUnits("1000", 6)); // USDC typically has 6 decimal places

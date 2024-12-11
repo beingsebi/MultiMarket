@@ -17,11 +17,18 @@ const MMContract = new ethers.Contract(contractAddress, contractABI, provider);
 
 async function getBalance(address) {
   try {
-    const balance = await MMContract.balances(address);
-    console.log(`Balance of address ${address} in MultiMarket contract: ${ethers.utils.formatUnits(balance, 6)} USDC`);
+    const freeBalance = await MMContract.freeBalances(address);
+    const resBalance=  await MMContract.reservedBalances(address);
+    const balance = freeBalance.add(resBalance); //NOT + operator ; it is not good!!!
+
+    console.log(`free Balance of address ${address} in MultiMarket contract: ${ethers.utils.formatUnits(freeBalance, 6)} USDC`);
+    console.log(`reserved Balance of address ${address} in MultiMarket contract: ${ethers.utils.formatUnits(resBalance, 6)} USDC`);
+    console.log(`total Balance of address ${address} in MultiMarket contract: ${ethers.utils.formatUnits(balance, 6)} USDC`);
   } catch (error) {
     console.error("Error fetching balance:", error);
   }
+  console.log(' ');
+
 }
 
 // Example: Get the balance of a specific address

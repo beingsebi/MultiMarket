@@ -26,6 +26,7 @@ async function withdraw(amount) {
   } catch (error) {
     console.error("Error during withdrawal:", error);
   }
+  console.log(' ');
 }
 
 // Example: withdraw 100 USDC
