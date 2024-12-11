@@ -33,6 +33,15 @@ interface IEvent {
         );
 
     /**
+     * @notice Retrieves details of a specific market.
+     * @param _index The index of the market to retrieve.
+     * @return The market title and description.
+     */
+    function getMarket(
+        uint _index
+    ) external view returns (string memory, string memory);
+
+    /**
      * @notice Retrieves the number of markets in the event.
      * @return The number of markets.
      */

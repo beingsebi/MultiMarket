@@ -4,8 +4,11 @@ pragma solidity >=0.8.28 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../market/Market.sol";
+import "../external/IMarketFactory.sol";
 
 contract Event is Ownable {
+    IMarketFactory internal marketFactory;
+
     // Decimals of the currency token
     // x / 10^decimals = x tokens
     uint16 public immutable decimals;
@@ -17,27 +20,18 @@ contract Event is Ownable {
     address[] public markets;
 
     constructor(
-        address owner,
+        address _owner,
+        address _marketFactoryAddress,
         uint16 _decimals,
         uint16 _granularity,
         string memory _title,
-        string memory _description,
-        string memory _firstMarketTitle,
-        string memory _firstMarketDescription
-    ) Ownable(owner) {
+        string memory _description
+    ) Ownable(_owner) {
+        marketFactory = IMarketFactory(_marketFactoryAddress);
         decimals = _decimals;
         granularity = _granularity;
         title = _title;
         description = _description;
-
-        Market _market = new Market(
-            _decimals,
-            _granularity,
-            _firstMarketTitle,
-            _firstMarketDescription
-        );
-
-        markets.push(address(_market));
     }
 
     /**
@@ -50,18 +44,19 @@ contract Event is Ownable {
         string memory _marketTitle,
         string memory _marketDescription
     ) external onlyOwner returns (bool) {
-        Market _market = new Market(
+        address marketAddress = marketFactory.createMarket(
+            address(this),
             decimals,
             granularity,
             _marketTitle,
             _marketDescription
         );
 
-        if (address(_market) == address(0)) {
+        if (marketAddress == address(0)) {
             return false;
         }
 
-        markets.push(address(_market));
+        markets.push(marketAddress);
 
         return true;
     }
@@ -85,6 +80,18 @@ contract Event is Ownable {
         }
 
         return (title, description, _marketsTitles, _marketsDescriptions);
+    }
+
+    /**
+     * @notice Retrieves details of a specific market.
+     * @param _index The index of the market to retrieve.
+     * @return The market title and description.
+     */
+    function getMarket(
+        uint _index
+    ) external view returns (string memory, string memory) {
+        Market _market = Market(markets[_index]);
+        return _market.getMarket();
     }
 
     function getMarketCount() external view returns (uint) {

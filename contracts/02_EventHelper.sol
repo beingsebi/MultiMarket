@@ -5,9 +5,11 @@ pragma solidity >=0.8.28 <0.9.0;
 import "./01_TokenHolder.sol";
 import "./event/IEvent.sol";
 import "./external/IEventFactory.sol";
+import "./external/IMarketFactory.sol";
 
 contract EventHelper is TokenHolder {
     IEventFactory internal eventFactory;
+    address internal marketFactoryAddress;
 
     uint public eventCreationFee; // includes the fees for the first market
     uint public marketCreationFee;
@@ -33,12 +35,14 @@ contract EventHelper is TokenHolder {
     constructor(
         address _currencyToken,
         address _eventFactoryAddress,
+        address _marketFactoryAddress,
         uint16 _decimals,
         uint16 _granularity,
         uint _eventCreationFee,
         uint _marketCreationFee
     ) TokenHolder(_currencyToken, _decimals, _granularity) {
         eventFactory = IEventFactory(_eventFactoryAddress);
+        marketFactoryAddress = _marketFactoryAddress;
         eventCreationFee = _eventCreationFee;
         marketCreationFee = _marketCreationFee;
     }
@@ -77,12 +81,11 @@ contract EventHelper is TokenHolder {
 
         address eventAddress = eventFactory.createEvent(
             address(this),
+            marketFactoryAddress,
             decimals,
             granularity,
             _eventTitle,
-            _eventDescription,
-            _firstMarketTitle,
-            _firstMarketDescription
+            _eventDescription
         );
 
         if (eventAddress == address(0)) {
@@ -171,5 +174,14 @@ contract EventHelper is TokenHolder {
         require(_eventIndex < events.length, "Invalid event index");
         IEvent _event = IEvent(events[_eventIndex]);
         return _event.getEvent();
+    }
+
+    function getMarket(
+        uint _eventIndex,
+        uint _marketIndex
+    ) external view returns (string memory, string memory) {
+        require(_eventIndex < events.length, "Invalid event index");
+        IEvent _event = IEvent(events[_eventIndex]);
+        return _event.getMarket(_marketIndex);
     }
 }

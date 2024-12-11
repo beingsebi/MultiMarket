@@ -3,7 +3,7 @@ async function main() {
 
   const usdcAddress = process.env.USDC_ADDRESS;
   const eventFactoryAddress = process.env.EVENT_FACTORY_ADDRESS;
-
+  const marketFactoryAddress = process.env.MARKET_FACTORY_ADDRESS;
   // usdc address, decimals,granularity,fee
   var decimals = 6;
   var granularity = 3;
@@ -13,6 +13,7 @@ async function main() {
   const multiMarket = await MultiMarket.deploy(
     usdcAddress,
     eventFactoryAddress,
+    marketFactoryAddress,
     decimals,
     granularity,
     eventFee,

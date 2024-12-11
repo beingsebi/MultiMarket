@@ -34,7 +34,7 @@ async function insertMarket(
     
     console.log("Transaction sent. Waiting for confirmation...");
     const receipt = await tx.wait(); // Wait for the transaction to be mined
-    console.log("Event created successfully!");
+    console.log("Market created successfully!");
 
     // Log the transaction hash and event creation details
     console.log(`Transaction Hash: ${receipt.transactionHash}`);
