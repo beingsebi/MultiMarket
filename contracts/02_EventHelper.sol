@@ -223,30 +223,21 @@ contract EventHelper is TokenHolder {
             freeBalances[msg.sender] -= _price * _shares;
             reservedBalances[msg.sender] += _price * _shares;
 
-            bool success = _event.placeLimitBuyOrder(
+            _event.placeLimitBuyOrder(
                 msg.sender,
                 _marketIndex,
                 _betOutcome,
                 _price,
                 _shares
             );
-
-            if (!success) {
-                freeBalances[msg.sender] += _price * _shares;
-                reservedBalances[msg.sender] -= _price * _shares;
-                return false;
-            }
-
-            return true;
         } else {
-            return
-                _event.placeLimitSellOrder(
-                    msg.sender,
-                    _marketIndex,
-                    _betOutcome,
-                    _price,
-                    _shares
-                );
+            _event.placeLimitSellOrder(
+                msg.sender,
+                _marketIndex,
+                _betOutcome,
+                _price,
+                _shares
+            );
         }
     }
 }

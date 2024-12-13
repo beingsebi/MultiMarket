@@ -48,7 +48,7 @@ contract Market is Ownable {
         BetOutcome _outcome,
         uint _price,
         uint _shares
-    ) external onlyOwner returns (bool) {
+    ) external onlyOwner {
         Order memory order = Order({
             user: user,
             initialShares: _shares,
@@ -59,8 +59,6 @@ contract Market is Ownable {
 
         orderBook[_outcome][OrderSide.Buy][_price].push(order);
         userActiveOrdersCount[user]++;
-
-        return true;
     }
 
     function placeLimitSellOrder(
@@ -68,7 +66,7 @@ contract Market is Ownable {
         BetOutcome _outcome,
         uint _price,
         uint _shares
-    ) external onlyOwner returns (bool) {
+    ) external onlyOwner {
         require(
             freeShares[_outcome][user] >= _shares,
             "Insufficient free shares"
@@ -86,7 +84,5 @@ contract Market is Ownable {
         reservedShares[_outcome][user] += _shares;
 
         orderBook[_outcome][OrderSide.Sell][_price].push(order);
-
-        return true;
     }
 }

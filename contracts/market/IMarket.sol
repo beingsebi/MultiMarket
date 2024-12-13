@@ -16,12 +16,12 @@ interface IMarket {
         BetOutcome _outcome,
         uint _price,
         uint _shares
-    ) external returns (bool);
+    ) external;
 
     function placeLimitSellOrder(
         address user,
         BetOutcome _outcome,
         uint _price,
         uint _shares
-    ) external returns (bool);
+    ) external;
 }

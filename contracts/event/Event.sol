@@ -102,43 +102,27 @@ contract Event is Ownable {
         return markets.length;
     }
 
-    /**
-     * @notice Places a limit buy order on a specific market.
-     * @param _marketIndex The index of the market to place the order on.
-     * @param _betOutcome The outcome to place the order on.
-     * @param _price The price of the order.
-     * @param _shares The number of shares to buy.
-     * @return A boolean indicating if the order was successfully placed.
-     */
     function placeLimitBuyOrder(
         address user,
         uint _marketIndex,
         BetOutcome _betOutcome,
         uint _price,
         uint _shares
-    ) external returns (bool) {
+    ) external {
         require(_marketIndex < markets.length, "Invalid market index");
 
         IMarket _market = IMarket(markets[_marketIndex]);
 
-        return _market.placeLimitBuyOrder(user, _betOutcome, _price, _shares);
+        _market.placeLimitBuyOrder(user, _betOutcome, _price, _shares);
     }
 
-    /**
-     * @notice Places a limit sell order on a specific market.
-     * @param _marketIndex The index of the market to place the order on.
-     * @param _betOutcome The outcome to place the order on.
-     * @param _price The price of the order.
-     * @param _shares The number of shares to sell.
-     * @return A boolean indicating if the order was successfully placed.
-     */
     function placeLimitSellOrder(
         address user,
         uint _marketIndex,
         BetOutcome _betOutcome,
         uint _price,
         uint _shares
-    ) external returns (bool) {
+    ) external {
         require(_marketIndex < markets.length, "Invalid market index");
 
         IMarket _market = IMarket(markets[_marketIndex]);
