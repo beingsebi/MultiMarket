@@ -3,6 +3,7 @@
 pragma solidity >=0.8.28 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "../utils/OrderDefinitions.sol";
 
 contract Market is Ownable {
     uint16 public immutable decimals;
@@ -13,7 +14,13 @@ contract Market is Ownable {
     string public description;
     uint public issuedShares;
 
-    //orderbook
+    // [Yes/No][Buy/Sell][Price][OrderIndex]
+    mapping(BetOutcome => mapping(OrderSide => mapping(uint => Order[]))) orderBook;
+    mapping(address => uint) userActiveOrdersCount;
+
+    // shares = free + reserved
+    mapping(BetOutcome => mapping(address => uint)) freeShares;
+    mapping(BetOutcome => mapping(address => uint)) reservedShares;
 
     constructor(
         address _owner,
@@ -34,5 +41,52 @@ contract Market is Ownable {
      */
     function getMarket() external view returns (string memory, string memory) {
         return (title, description);
+    }
+
+    function placeLimitBuyOrder(
+        address user,
+        BetOutcome _outcome,
+        uint _price,
+        uint _shares
+    ) external onlyOwner returns (bool) {
+        Order memory order = Order({
+            user: user,
+            initialShares: _shares,
+            remainingShares: _shares,
+            timestamp: block.timestamp,
+            isActive: true
+        });
+
+        orderBook[_outcome][OrderSide.Buy][_price].push(order);
+        userActiveOrdersCount[user]++;
+
+        return true;
+    }
+
+    function placeLimitSellOrder(
+        address user,
+        BetOutcome _outcome,
+        uint _price,
+        uint _shares
+    ) external onlyOwner returns (bool) {
+        require(
+            freeShares[_outcome][user] >= _shares,
+            "Insufficient free shares"
+        );
+
+        Order memory order = Order({
+            user: user,
+            initialShares: _shares,
+            remainingShares: _shares,
+            timestamp: block.timestamp,
+            isActive: true
+        });
+
+        freeShares[_outcome][user] -= _shares;
+        reservedShares[_outcome][user] += _shares;
+
+        orderBook[_outcome][OrderSide.Sell][_price].push(order);
+
+        return true;
     }
 }

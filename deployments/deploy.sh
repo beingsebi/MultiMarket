@@ -55,6 +55,7 @@ npx hardhat run scripts/getEvent.js --network localhost
 
 # Get the market
 npx hardhat run scripts/getMarket.js --network localhost
-# npx hardhat run scripts/placeLimitBuyOrder.js --network localhost
 
-# npx hardhat run scripts/placeLimitSellOrder.js --network localhost
+npx hardhat run scripts/placeLimitBuyOrder.js --network localhost
+
+npx hardhat run scripts/placeLimitSellOrder.js --network localhost

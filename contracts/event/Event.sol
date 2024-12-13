@@ -3,8 +3,9 @@
 pragma solidity >=0.8.28 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../market/Market.sol";
+import "../market/IMarket.sol";
 import "../external/IMarketFactory.sol";
+import "../utils/OrderDefinitions.sol";
 
 contract Event is Ownable {
     IMarketFactory internal marketFactory;
@@ -74,9 +75,8 @@ contract Event is Ownable {
         string[] memory _marketsDescriptions = new string[](markets.length);
 
         for (uint i = 0; i < markets.length; i++) {
-            Market _market = Market(markets[i]);
-            _marketsTitles[i] = _market.title();
-            _marketsDescriptions[i] = _market.description();
+            IMarket _market = IMarket(markets[i]);
+            (_marketsTitles[i], _marketsDescriptions[i]) = _market.getMarket();
         }
 
         return (title, description, _marketsTitles, _marketsDescriptions);
@@ -90,11 +90,59 @@ contract Event is Ownable {
     function getMarket(
         uint _index
     ) external view returns (string memory, string memory) {
-        Market _market = Market(markets[_index]);
+        IMarket _market = IMarket(markets[_index]);
         return _market.getMarket();
     }
 
+    /**
+     * @notice Retrieves the number of markets in the event.
+     * @return The number of markets.
+     */
     function getMarketCount() external view returns (uint) {
         return markets.length;
+    }
+
+    /**
+     * @notice Places a limit buy order on a specific market.
+     * @param _marketIndex The index of the market to place the order on.
+     * @param _betOutcome The outcome to place the order on.
+     * @param _price The price of the order.
+     * @param _shares The number of shares to buy.
+     * @return A boolean indicating if the order was successfully placed.
+     */
+    function placeLimitBuyOrder(
+        address user,
+        uint _marketIndex,
+        BetOutcome _betOutcome,
+        uint _price,
+        uint _shares
+    ) external returns (bool) {
+        require(_marketIndex < markets.length, "Invalid market index");
+
+        IMarket _market = IMarket(markets[_marketIndex]);
+
+        return _market.placeLimitBuyOrder(user, _betOutcome, _price, _shares);
+    }
+
+    /**
+     * @notice Places a limit sell order on a specific market.
+     * @param _marketIndex The index of the market to place the order on.
+     * @param _betOutcome The outcome to place the order on.
+     * @param _price The price of the order.
+     * @param _shares The number of shares to sell.
+     * @return A boolean indicating if the order was successfully placed.
+     */
+    function placeLimitSellOrder(
+        address user,
+        uint _marketIndex,
+        BetOutcome _betOutcome,
+        uint _price,
+        uint _shares
+    ) external returns (bool) {
+        require(_marketIndex < markets.length, "Invalid market index");
+
+        IMarket _market = IMarket(markets[_marketIndex]);
+
+        return _market.placeLimitSellOrder(user, _betOutcome, _price, _shares);
     }
 }

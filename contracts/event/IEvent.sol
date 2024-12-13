@@ -2,6 +2,8 @@
 
 pragma solidity >=0.8.28 <0.9.0;
 
+import "../utils/OrderDefinitions.sol";
+
 interface IEvent {
     /**
      * @notice Adds a new market to an existing event.
@@ -46,4 +48,36 @@ interface IEvent {
      * @return The number of markets.
      */
     function getMarketCount() external view returns (uint);
+
+    /*
+     * @notice Places a limit buy order on a specific market.
+     * @param _marketIndex The index of the market to place the order on.
+     * @param _betOutcome The outcome to place the order on.
+     * @param _price The price of the order.
+     * @param _shares The number of shares to buy.
+     * @return A boolean indicating if the order was successfully placed.
+     */
+    function placeLimitBuyOrder(
+        address user,
+        uint _marketIndex,
+        BetOutcome _betOutcome,
+        uint _price,
+        uint _shares
+    ) external returns (bool);
+
+    /*
+     * @notice Places a limit buy order on a specific market.
+     * @param _marketIndex The index of the market to place the order on.
+     * @param _betOutcome The outcome to place the order on.
+     * @param _price The price of the order.
+     * @param _shares The number of shares to buy.
+     * @return A boolean indicating if the order was successfully placed.
+     */
+    function placeLimitSellOrder(
+        address user,
+        uint _marketIndex,
+        BetOutcome _betOutcome,
+        uint _price,
+        uint _shares
+    ) external returns (bool);
 }

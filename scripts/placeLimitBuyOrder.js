@@ -21,7 +21,7 @@ async function placeBuyOrderLimit(
   eventIndex,
   marketIndex,
   betOutcome,  // Use 0 for "Yes", 1 for "No"
-  orderType,   // Use 0 for "Buy"
+  orderSide,   // Use 0 for "Buy"
   price,
   shares
 ) {
@@ -29,11 +29,11 @@ async function placeBuyOrderLimit(
     console.log("Placing a limit buy order...");
 
     // Call the placeOrder function
-    const tx = await ordersHelperContract.placeOrder(
+    const tx = await ordersHelperContract.placeLimitOrder(
       eventIndex,
       marketIndex,
       betOutcome,
-      orderType,
+      orderSide,
       price,
       shares
     );

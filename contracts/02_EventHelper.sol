@@ -6,6 +6,7 @@ import "./01_TokenHolder.sol";
 import "./event/IEvent.sol";
 import "./external/IEventFactory.sol";
 import "./external/IMarketFactory.sol";
+import "./utils/OrderDefinitions.sol";
 
 contract EventHelper is TokenHolder {
     IEventFactory internal eventFactory;
@@ -183,5 +184,69 @@ contract EventHelper is TokenHolder {
         require(_eventIndex < events.length, "Invalid event index");
         IEvent _event = IEvent(events[_eventIndex]);
         return _event.getMarket(_marketIndex);
+    }
+
+    function placeLimitOrder(
+        uint _eventIndex,
+        uint _marketIndex,
+        BetOutcome _betOutcome,
+        OrderSide _orderSide,
+        uint _price,
+        uint _shares
+    ) external returns (bool) {
+        require(
+            _betOutcome == BetOutcome.Yes || _betOutcome == BetOutcome.No,
+            "Invalid bet outcome"
+        );
+        require(
+            _orderSide == OrderSide.Buy || _orderSide == OrderSide.Sell,
+            "Invalid order side"
+        );
+        require(_eventIndex < events.length, "Invalid event index");
+        require(
+            _price >= 0 && _price <= 10 ** decimals,
+            "Price must be between 0 and 1 (* 10^decimals)"
+        );
+        require(
+            _price % (10 ** (decimals - granularity)) == 0,
+            "Price must be a multiple of 10^(decimals - granularity)"
+        );
+        require(_shares > 0, "Shares must be greater than 0");
+
+        IEvent _event = IEvent(events[_eventIndex]);
+
+        if (_orderSide == OrderSide.Buy) {
+            require(
+                freeBalances[msg.sender] >= _price * _shares,
+                "Insufficient free funds"
+            );
+            freeBalances[msg.sender] -= _price * _shares;
+            reservedBalances[msg.sender] += _price * _shares;
+
+            bool success = _event.placeLimitBuyOrder(
+                msg.sender,
+                _marketIndex,
+                _betOutcome,
+                _price,
+                _shares
+            );
+
+            if (!success) {
+                freeBalances[msg.sender] += _price * _shares;
+                reservedBalances[msg.sender] -= _price * _shares;
+                return false;
+            }
+
+            return true;
+        } else {
+            return
+                _event.placeLimitSellOrder(
+                    msg.sender,
+                    _marketIndex,
+                    _betOutcome,
+                    _price,
+                    _shares
+                );
+        }
     }
 }
