@@ -193,7 +193,7 @@ contract EventHelper is TokenHolder {
         OrderSide _orderSide,
         uint _price,
         uint _shares
-    ) external returns (bool) {
+    ) external {
         require(
             _betOutcome == BetOutcome.Yes || _betOutcome == BetOutcome.No,
             "Invalid bet outcome"
