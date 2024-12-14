@@ -35,16 +35,10 @@ contract Event is Ownable {
         description = _description;
     }
 
-    /**
-     * @notice Adds a new market to an existing event.
-     * @dev Only the event admin can add markets. Deducts the market creation fee from the sender's balance.
-     * @param _marketTitle The title of the new market.
-     * @param _marketDescription A description of the new market.
-     */
     function addMarket(
         string memory _marketTitle,
         string memory _marketDescription
-    ) external onlyOwner returns (bool) {
+    ) external onlyOwner returns (address) {
         address marketAddress = marketFactory.createMarket(
             address(this),
             decimals,
@@ -54,12 +48,12 @@ contract Event is Ownable {
         );
 
         if (marketAddress == address(0)) {
-            return false;
+            return address(0);
         }
 
         markets.push(marketAddress);
 
-        return true;
+        return marketAddress;
     }
 
     /**

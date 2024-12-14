@@ -143,11 +143,12 @@ contract EventHelper is TokenHolder {
         contractBalance += marketCreationFee;
         IEvent _event = IEvent(events[_eventIndex]);
 
-        if (!_event.addMarket(_marketTitle, _marketDescription)) {
-            freeBalances[msg.sender] += marketCreationFee;
-            contractBalance -= marketCreationFee;
-            return false;
-        }
+        address marketAddress = _event.addMarket(
+            _marketTitle,
+            _marketDescription
+        );
+
+        isMarket[marketAddress] = true;
 
         emit MarketCreated(
             msg.sender,

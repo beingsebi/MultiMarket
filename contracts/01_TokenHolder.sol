@@ -23,6 +23,13 @@ contract TokenHolder is Ownable {
     // Event emitted when a withdrawal is made
     event Withdraw(address indexed user, uint amount);
 
+    mapping(address => bool) public isMarket;
+
+    modifier onlyMarket() {
+        require(isMarket[msg.sender], "Only market can call this function");
+        _;
+    }
+
     /**
      * @dev Constructor that sets the currency token and initializes the Ownable contract.
      * @param _currencyToken Address of the ERC20 token to be used as currency.
@@ -142,5 +149,15 @@ contract TokenHolder is Ownable {
         } catch {
             return false;
         }
+    }
+
+    function transferReserved(
+        address from,
+        address to,
+        uint amount
+    ) external onlyMarket {
+        require(reservedBalances[from] >= amount, "Insufficient balance");
+        reservedBalances[from] -= amount;
+        reservedBalances[to] += amount;
     }
 }
