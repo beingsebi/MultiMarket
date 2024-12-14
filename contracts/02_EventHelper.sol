@@ -187,6 +187,15 @@ contract EventHelper is TokenHolder {
         return _event.getMarket(_marketIndex);
     }
 
+    function getPositions(
+        uint _eventIndex,
+        address _user
+    ) external view returns (uint[] memory, uint[] memory) {
+        require(_eventIndex < events.length, "Invalid event index");
+        IEvent _event = IEvent(events[_eventIndex]);
+        return _event.getPositions(_user);
+    }
+
     function placeLimitOrder(
         uint _eventIndex,
         uint _marketIndex,

@@ -57,4 +57,8 @@ interface IEvent {
         uint _price,
         uint _shares
     ) external;
+
+    function getPositions(
+        address user
+    ) external view returns (uint[] memory, uint[] memory);
 }

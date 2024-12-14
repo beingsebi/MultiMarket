@@ -53,6 +53,15 @@ contract Market is Ownable {
         return (title, description);
     }
 
+    function getPositions(address user) external view returns (uint, uint) {
+        return (
+            freeShares[BetOutcome.Yes][user] +
+                reservedShares[BetOutcome.Yes][user],
+            freeShares[BetOutcome.No][user] +
+                reservedShares[BetOutcome.No][user]
+        );
+    }
+
     function placeLimitBuyOrder(
         address user,
         BetOutcome _outcome,

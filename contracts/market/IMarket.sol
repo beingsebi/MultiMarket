@@ -24,4 +24,6 @@ interface IMarket {
         uint _price,
         uint _shares
     ) external;
+
+    function getPositions(address user) external view returns (uint, uint);
 }

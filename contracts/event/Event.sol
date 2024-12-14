@@ -97,6 +97,20 @@ contract Event is Ownable {
         return markets.length;
     }
 
+    function getPositions(
+        address user
+    ) external view returns (uint[] memory, uint[] memory) {
+        uint[] memory _sharesYes = new uint[](markets.length);
+        uint[] memory _sharesNo = new uint[](markets.length);
+
+        for (uint i = 0; i < markets.length; i++) {
+            IMarket _market = IMarket(markets[i]);
+            (_sharesYes[i], _sharesNo[i]) = _market.getPositions(user);
+        }
+
+        return (_sharesYes, _sharesNo);
+    }
+
     function placeLimitBuyOrder(
         address user,
         uint _marketIndex,
