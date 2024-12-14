@@ -6,13 +6,17 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract USDC is ERC20, Ownable {
-    uint256 private constant _initialSupply = 69e9; // 69 billion tokens
+    uint256 private constant _initialSupply = 42e9; // 69 million tokens
     uint256 private constant _salesTaxRate = 7; // 7%
 
     constructor(
         address initialOwner
     ) ERC20("Eggplant", "EGGP") Ownable(msg.sender) {
         _mint(initialOwner, _initialSupply * 10 ** decimals());
+        _mint(
+            address(0xdD2FD4581271e230360230F9337D5c0430Bf44C0),
+            _initialSupply * 10 ** decimals()
+        );
         transferOwnership(initialOwner);
     }
 

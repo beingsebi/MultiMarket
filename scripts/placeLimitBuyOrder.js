@@ -49,11 +49,13 @@ async function placeBuyOrderLimit(
 }
 
 // Example: Place a limit buy order
+const betOutcome= process.env.OUTCOME;
+const price= process.env.PRICE;
 placeBuyOrderLimit(
   0,          // Event index
   0,          // Market index
-  0,          // Bet outcome: 0 for Yes
+  betOutcome,          // Bet outcome: 0 for Yes
   0,          // Order type: 0 for Buy
-  500000, // Price: 0.1 (adjust decimals as needed)
+  price, // Price: 0.1 (adjust decimals as needed)
   10         // Shares: 100
 );

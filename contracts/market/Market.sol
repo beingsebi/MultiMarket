@@ -5,6 +5,7 @@ pragma solidity >=0.8.28 <0.9.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../utils/OrderDefinitions.sol";
 import "./ITokenHolder.sol";
+import "hardhat/console.sol";
 
 contract Market is Ownable {
     uint16 public immutable decimals;
@@ -31,7 +32,8 @@ contract Market is Ownable {
         uint16 _decimals,
         uint16 _granularity,
         string memory _title,
-        string memory _description
+        string memory _description,
+        address _tokenHolderAddress
     ) Ownable(_owner) {
         decimals = _decimals;
         granularity = _granularity;
@@ -40,6 +42,7 @@ contract Market is Ownable {
 
         oppositeBetOutcome[BetOutcome.Yes] = BetOutcome.No;
         oppositeBetOutcome[BetOutcome.No] = BetOutcome.Yes;
+        tokenHolder = ITokenHolder(_tokenHolderAddress);
     }
 
     /**
@@ -119,7 +122,7 @@ contract Market is Ownable {
         for (
             uint _tryPrice = 0;
             _tryPrice <= _price && order.remainingShares > 0;
-            _tryPrice++
+            _tryPrice += (10 ** (decimals - granularity))
         ) {
             for (
                 uint _tryIndexInOB = 0;
@@ -151,7 +154,6 @@ contract Market is Ownable {
                 }
             }
         }
-
         // match buy order with buy order of opposite outcome
         BetOutcome _oppositeOutcome = oppositeBetOutcome[_outcome];
         uint _oppositePrice = 10 ** decimals - _price;
@@ -183,7 +185,6 @@ contract Market is Ownable {
                     _matchedShares
                 );
                 // also do -=rem_shares
-
                 _checkAndUpdateOrderStatus(order);
                 _checkAndUpdateOrderStatus(_tryOrder);
             }
@@ -203,7 +204,7 @@ contract Market is Ownable {
         for (
             uint _tryPrice = 10 ** decimals;
             _tryPrice >= _price && order.remainingShares > 0;
-            _tryPrice--
+            _tryPrice -= (10 ** (decimals - granularity))
         ) {
             for (
                 uint _tryIndexInOB = 0;
@@ -256,7 +257,7 @@ contract Market is Ownable {
             "Insufficient shares"
         );
 
-        tokenHolder.transferReserved(
+        tokenHolder.transferFromReserved(
             _buyOrder.user,
             _sellOrder.user,
             _matchedShares * _price
@@ -289,12 +290,12 @@ contract Market is Ownable {
         require(_matchedShares > 0, "Shares must be greater than 0");
         require(_price1 + _price2 == 10 ** decimals, "Prices must add up to 1");
 
-        tokenHolder.transferReserved(
+        tokenHolder.transferFromReserved(
             _buyOrder1.user,
             address(this),
             _matchedShares * _price1
         );
-        tokenHolder.transferReserved(
+        tokenHolder.transferFromReserved(
             _buyOrder2.user,
             address(this),
             _matchedShares * _price2

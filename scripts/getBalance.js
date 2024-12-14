@@ -32,6 +32,8 @@ async function getBalance(address) {
 }
 
 // Example: Get the balance of a specific address
-const addressToCheck = "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199";  
+// const addressToCheck = "0xdD2FD4581271e230360230F9337D5c0430Bf44C0";  
+
+const addressToCheck = process.env.PUBLIC_ADDRESS;
 
 getBalance(addressToCheck);

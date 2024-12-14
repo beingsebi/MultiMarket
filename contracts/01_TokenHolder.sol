@@ -151,13 +151,13 @@ contract TokenHolder is Ownable {
         }
     }
 
-    function transferReserved(
+    function transferFromReserved(
         address from,
         address to,
         uint amount
     ) external onlyMarket {
         require(reservedBalances[from] >= amount, "Insufficient balance");
         reservedBalances[from] -= amount;
-        reservedBalances[to] += amount;
+        freeBalances[to] += amount;
     }
 }

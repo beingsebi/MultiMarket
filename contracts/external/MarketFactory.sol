@@ -11,7 +11,8 @@ contract MarketFactory {
         uint16 _decimals,
         uint16 _granularity,
         string memory _marketTitle,
-        string memory _marketDescription
+        string memory _marketDescription,
+        address _tokenHolderAddress
     ) external returns (address) {
         return
             address(
@@ -20,7 +21,8 @@ contract MarketFactory {
                     _decimals,
                     _granularity,
                     _marketTitle,
-                    _marketDescription
+                    _marketDescription,
+                    _tokenHolderAddress
                 )
             );
     }

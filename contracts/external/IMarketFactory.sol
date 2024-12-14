@@ -8,6 +8,7 @@ interface IMarketFactory {
         uint16 _decimals,
         uint16 _granularity,
         string memory _marketTitle,
-        string memory _marketDescription
+        string memory _marketDescription,
+        address _tokenHolderAddress
     ) external returns (address);
 }

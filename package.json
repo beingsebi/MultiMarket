@@ -13,6 +13,7 @@
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "ethers": "^5.7.2",
     "hardhat": "^2.22.17",
+    "hardhat-console": "^1.0.0",
     "hardhat-contract-sizer": "^2.10.0"
   },
   "dependencies": {

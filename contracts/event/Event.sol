@@ -44,7 +44,8 @@ contract Event is Ownable {
             decimals,
             granularity,
             _marketTitle,
-            _marketDescription
+            _marketDescription,
+            msg.sender
         );
 
         if (marketAddress == address(0)) {
