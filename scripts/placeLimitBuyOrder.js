@@ -52,11 +52,14 @@ async function placeBuyOrderLimit(
 // Example: Place a limit buy order
 const betOutcome= process.env.OUTCOME;
 const price= process.env.PRICE;
+const shares= process.env.SHARES;
+
+
 placeBuyOrderLimit(
   0,          // Event index
   0,          // Market index
   betOutcome,          // Bet outcome: 0 for Yes
   0,          // Order type: 0 for Buy
   price, // Price: 0.1 (adjust decimals as needed)
-  10         // Shares: 100
+  shares         // Shares: 100
 );

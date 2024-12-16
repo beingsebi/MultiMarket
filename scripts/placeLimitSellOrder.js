@@ -52,6 +52,8 @@ async function placeSellOrderLimit(
 
 const outcome= process.env.OUTCOME;
 const price= process.env.PRICE;
+const shares= process.env.SHARES;
+
 // Example: Place a limit sell order
 placeSellOrderLimit(
   0,          // Event index
@@ -59,5 +61,5 @@ placeSellOrderLimit(
   outcome,          // Bet outcome: 1 for No
   1,          // Order type: 1 for Sell
   price, // Price: 0.2 (adjust decimals as needed)
-  5          // Shares: 50
+  shares          // Shares: 50
 );
