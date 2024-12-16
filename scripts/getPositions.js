@@ -34,6 +34,7 @@ async function getPositions(eventIndex, userAddress) {
   } catch (error) {
     console.error("Error fetching positions:", error);
   }
+  console.log(' ');
 }
 
 // Replace with the event index and user's address

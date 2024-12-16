@@ -27,6 +27,10 @@ interface IEvent {
             string[] memory marketDescriptions
         );
 
+    function title() external view returns (string memory);
+
+    function description() external view returns (string memory);
+
     /**
      * @notice Retrieves details of a specific market.
      * @param _index The index of the market to retrieve.
@@ -64,4 +68,9 @@ interface IEvent {
         external
         view
         returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory);
+
+    function getAllMarkets()
+        external
+        view
+        returns (string[] memory, string[] memory);
 }

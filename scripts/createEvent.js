@@ -15,7 +15,7 @@ const provider = new ethers.providers.JsonRpcProvider(process.env.API_URL);
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 // Create contract instance
-const eventFactoryContract = new ethers.Contract(contractAddress, contractABI, wallet);
+const contract = new ethers.Contract(contractAddress, contractABI, wallet);
 
 async function insertEvent(
   eventTitle,
@@ -25,7 +25,7 @@ async function insertEvent(
     console.log("Creating a new event...");
     
     // Call the createEvent function on the contract
-    const tx = await eventFactoryContract.createEvent(
+    const tx = await contract.createEvent(
       eventTitle,
       eventDescription
     );
@@ -35,7 +35,6 @@ async function insertEvent(
     console.log("Event created successfully!");
 
     // Log the transaction hash and event creation details
-    console.log(`Transaction Hash: ${receipt.transactionHash}`);
     console.log("Event Details:");
     console.log(`  Title: ${eventTitle}`);
     console.log(`  Description: ${eventDescription}`);

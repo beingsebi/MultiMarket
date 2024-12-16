@@ -164,4 +164,20 @@ contract Event is Ownable {
 
         return _market.placeLimitSellOrder(user, _betOutcome, _price, _shares);
     }
+
+    function getAllMarkets()
+        external
+        view
+        returns (string[] memory, string[] memory)
+    {
+        string[] memory _marketsTitles = new string[](markets.length);
+        string[] memory _marketsDescriptions = new string[](markets.length);
+
+        for (uint i = 0; i < markets.length; i++) {
+            (_marketsTitles[i], _marketsDescriptions[i]) = IMarket(markets[i])
+                .getMarket();
+        }
+
+        return (_marketsTitles, _marketsDescriptions);
+    }
 }

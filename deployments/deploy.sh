@@ -55,6 +55,10 @@ npx hardhat run scripts/createMarket.js --network localhost
 # Get the event
 npx hardhat run scripts/getEvent.js --network localhost
 
+# Get all events
+npx hardhat run scripts/getAllEvents.js --network localhost
+
+npx hardhat run scripts/getAllMarkets.js --network localhost
 
 # Get the market
 npx hardhat run scripts/getMarket.js --network localhost

@@ -261,4 +261,28 @@ contract EventHelper is TokenHolder {
             );
         }
     }
+
+    function getAllEvents()
+        external
+        view
+        returns (string[] memory, string[] memory)
+    {
+        string[] memory _titles = new string[](events.length);
+        string[] memory _descriptions = new string[](events.length);
+
+        for (uint i = 0; i < events.length; i++) {
+            IEvent _event = IEvent(events[i]);
+            _titles[i] = _event.title();
+            _descriptions[i] = _event.description();
+        }
+
+        return (_titles, _descriptions);
+    }
+
+    function getAllMarkets(
+        uint _eventIndex
+    ) external view returns (string[] memory, string[] memory) {
+        require(_eventIndex < events.length, "Invalid event index");
+        return IEvent(events[_eventIndex]).getAllMarkets();
+    }
 }
