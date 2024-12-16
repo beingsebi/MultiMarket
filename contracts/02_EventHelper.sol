@@ -10,10 +10,13 @@ import "./utils/OrderDefinitions.sol";
 
 contract EventHelper is TokenHolder {
     IEventFactory internal eventFactory;
+
+    // Use the address because it's cheaper than using the interface
     address internal marketFactoryAddress;
 
-    uint public eventCreationFee; // includes the fees for the first market
+    uint public eventCreationFee;
     uint public marketCreationFee;
+
     address[] public events;
     mapping(address => address) public eventToOwner;
     mapping(address => uint) public ownerEventCount;
@@ -138,6 +141,12 @@ contract EventHelper is TokenHolder {
             _marketDescription
         );
 
+        if (marketAddress == address(0)) {
+            freeBalances[msg.sender] += marketCreationFee;
+            contractBalance -= marketCreationFee;
+            return false;
+        }
+
         isMarket[marketAddress] = true;
 
         emit MarketCreated(
@@ -177,13 +186,23 @@ contract EventHelper is TokenHolder {
         return _event.getMarket(_marketIndex);
     }
 
+    /**
+     * @notice Retrieves the positions of a user in a specific event.
+     * @param _eventIndex The index of the event to retrieve.
+     * @param _user The address of the user.
+     * @return The user's positions in the event:
+     * free YES shares, reserved YES shares, free NO shares, reserved NO shares.
+     */
     function getPositions(
         uint _eventIndex,
         address _user
-    ) external view returns (uint[] memory, uint[] memory) {
+    )
+        external
+        view
+        returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory)
+    {
         require(_eventIndex < events.length, "Invalid event index");
-        IEvent _event = IEvent(events[_eventIndex]);
-        return _event.getPositions(_user);
+        return IEvent(events[_eventIndex]).getPositions(_user);
     }
 
     function placeLimitOrder(
@@ -214,6 +233,8 @@ contract EventHelper is TokenHolder {
         require(_shares > 0, "Shares must be greater than 0");
 
         IEvent _event = IEvent(events[_eventIndex]);
+
+        require(_marketIndex < _event.getMarketCount(), "Invalid market index");
 
         if (_orderSide == OrderSide.Buy) {
             require(

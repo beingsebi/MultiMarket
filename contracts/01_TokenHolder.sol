@@ -6,14 +6,19 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract TokenHolder is Ownable {
-    // ERC20 token used as currency in the contract
+    // ERC20 token used as currency in the contract (e.g. USDC)
     IERC20 public immutable currencyTokenContract;
+
+    // balance from collected fees
     uint public contractBalance;
+
     // Decimals of the currency token
     // x / 10^decimals = x tokens
     uint16 public immutable decimals;
+
     // 3 => minPrice = 1e-3 tokens
     uint16 public immutable granularity;
+
     mapping(address => uint) public freeBalances;
     mapping(address => uint) public reservedBalances;
     //balance=reserved+free
@@ -112,6 +117,7 @@ contract TokenHolder is Ownable {
             address(this),
             _amount
         );
+
         require(success, "Transfer failed");
     }
 

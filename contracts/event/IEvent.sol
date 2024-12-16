@@ -60,5 +60,8 @@ interface IEvent {
 
     function getPositions(
         address user
-    ) external view returns (uint[] memory, uint[] memory);
+    )
+        external
+        view
+        returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory);
 }

@@ -53,12 +53,23 @@ contract Market is Ownable {
         return (title, description);
     }
 
-    function getPositions(address user) external view returns (uint, uint) {
+    /**
+     * @notice Returns the user's positions in the market.
+     * @param user The user's address.
+     * @return The user's positions in the market.
+     * [0] => freeShares[Yes]
+     * [1] => reservedShares[Yes]
+     * [2] => freeShares[No]
+     * [3] => reservedShares[No]
+     */
+    function getPositions(
+        address user
+    ) external view returns (uint, uint, uint, uint) {
         return (
-            freeShares[BetOutcome.Yes][user] +
-                reservedShares[BetOutcome.Yes][user],
-            freeShares[BetOutcome.No][user] +
-                reservedShares[BetOutcome.No][user]
+            freeShares[BetOutcome.Yes][user],
+            reservedShares[BetOutcome.Yes][user],
+            freeShares[BetOutcome.No][user],
+            reservedShares[BetOutcome.No][user]
         );
     }
 

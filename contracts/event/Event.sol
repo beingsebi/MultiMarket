@@ -31,6 +31,7 @@ contract Event is Ownable {
         marketFactory = IMarketFactory(_marketFactoryAddress);
         decimals = _decimals;
         granularity = _granularity;
+
         title = _title;
         description = _description;
     }
@@ -97,18 +98,43 @@ contract Event is Ownable {
         return markets.length;
     }
 
+    /*
+     * @notice Retrieves the positions of a user in all markets of the event.
+     * @param user The address of the user.
+     * @return An array of free YES shares for each market.
+     * @return An array of reserved YES shares for each market.
+     * @return An array of free NO shares for each market.
+     * @return An array of reserved NO shares for each market.
+     * @dev The arrays are ordered by market index.
+     */
     function getPositions(
         address user
-    ) external view returns (uint[] memory, uint[] memory) {
-        uint[] memory _sharesYes = new uint[](markets.length);
-        uint[] memory _sharesNo = new uint[](markets.length);
+    )
+        external
+        view
+        returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory)
+    {
+        uint[] memory _freeSharesYes = new uint[](markets.length);
+        uint[] memory _reservedSharesYes = new uint[](markets.length);
+        uint[] memory _freeSharesNo = new uint[](markets.length);
+        uint[] memory _reservedSharesNo = new uint[](markets.length);
 
         for (uint i = 0; i < markets.length; i++) {
             IMarket _market = IMarket(markets[i]);
-            (_sharesYes[i], _sharesNo[i]) = _market.getPositions(user);
+            (
+                _freeSharesYes[i],
+                _reservedSharesYes[i],
+                _freeSharesNo[i],
+                _reservedSharesNo[i]
+            ) = _market.getPositions(user);
         }
 
-        return (_sharesYes, _sharesNo);
+        return (
+            _freeSharesYes,
+            _reservedSharesYes,
+            _freeSharesNo,
+            _reservedSharesNo
+        );
     }
 
     function placeLimitBuyOrder(
