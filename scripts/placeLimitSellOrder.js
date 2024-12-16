@@ -46,14 +46,18 @@ async function placeSellOrderLimit(
   } catch (error) {
     console.error("Error placing limit sell order:", error);
   }
+  console.log(' ');
 }
 
+
+const outcome= process.env.OUTCOME;
+const price= process.env.PRICE;
 // Example: Place a limit sell order
 placeSellOrderLimit(
   0,          // Event index
   0,          // Market index
-  1,          // Bet outcome: 1 for No
+  outcome,          // Bet outcome: 1 for No
   1,          // Order type: 1 for Sell
-  ethers.utils.parseUnits("0.2", 6), // Price: 0.2 (adjust decimals as needed)
-  50          // Shares: 50
+  price, // Price: 0.2 (adjust decimals as needed)
+  5          // Shares: 50
 );

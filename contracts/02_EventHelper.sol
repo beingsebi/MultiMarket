@@ -50,9 +50,7 @@ contract EventHelper is TokenHolder {
 
     function createEvent(
         string memory _eventTitle,
-        string memory _eventDescription,
-        string memory _firstMarketTitle,
-        string memory _firstMarketDescription
+        string memory _eventDescription
     ) external returns (bool) {
         require(
             freeBalances[msg.sender] >= eventCreationFee,
@@ -67,14 +65,6 @@ contract EventHelper is TokenHolder {
         require(
             bytes(_eventDescription).length >= 15,
             "Event description must be at least 15 characters long"
-        );
-        require(
-            bytes(_firstMarketTitle).length >= 5,
-            "Market title must be at least 5 characters long"
-        );
-        require(
-            bytes(_firstMarketDescription).length >= 15,
-            "Market description must be at least 15 characters long"
         );
 
         freeBalances[msg.sender] -= eventCreationFee;

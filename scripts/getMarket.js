@@ -30,6 +30,7 @@ async function getMarketDetails(eventIndex, marketIndex) {
   } catch (error) {
     console.error("Error fetching market details:", error);
   }
+  console.log(' ');
 }
 
 // Example: Retrieve details for market 0 of event 0

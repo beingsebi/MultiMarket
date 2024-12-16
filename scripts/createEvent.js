@@ -19,9 +19,7 @@ const eventFactoryContract = new ethers.Contract(contractAddress, contractABI, w
 
 async function insertEvent(
   eventTitle,
-  eventDescription,
-  firstMarketTitle,
-  firstMarketDescription
+  eventDescription
 ) {
   try {
     console.log("Creating a new event...");
@@ -29,9 +27,7 @@ async function insertEvent(
     // Call the createEvent function on the contract
     const tx = await eventFactoryContract.createEvent(
       eventTitle,
-      eventDescription,
-      firstMarketTitle,
-      firstMarketDescription
+      eventDescription
     );
     
     console.log("Transaction sent. Waiting for confirmation...");
@@ -43,8 +39,6 @@ async function insertEvent(
     console.log("Event Details:");
     console.log(`  Title: ${eventTitle}`);
     console.log(`  Description: ${eventDescription}`);
-    console.log(`  First Market Title: ${firstMarketTitle}`);
-    console.log(`  First Market Description: ${firstMarketDescription}`);
   } catch (error) {
     console.error("Error creating event:", error);
   }
@@ -54,7 +48,5 @@ async function insertEvent(
 // Example: Create an event
 insertEvent(
   "Sample Event",
-  "This is a test event for demonstration purposes",
-  "First Market",
-  "This is the description for the first market"
+  "This is a test event for demonstration purposes"
 );

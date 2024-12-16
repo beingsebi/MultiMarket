@@ -36,6 +36,7 @@ async function getEventDetails(eventIndex) {
   } catch (error) {
     console.error("Error fetching event details:", error);
   }
+  console.log(' ');
 }
 
 // Example: Retrieve details for event 0

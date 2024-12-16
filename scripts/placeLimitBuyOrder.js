@@ -46,6 +46,7 @@ async function placeBuyOrderLimit(
   } catch (error) {
     console.error("Error placing limit buy order:", error);
   }
+  console.log(' ');
 }
 
 // Example: Place a limit buy order
