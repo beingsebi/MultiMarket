@@ -28,4 +28,16 @@ interface IMarket {
     function getPositions(
         address user
     ) external view returns (uint, uint, uint, uint);
+
+    function placeMarketBuyOrderByShares(
+        address user,
+        BetOutcome _outcome,
+        uint _shares
+    ) external;
+
+    function placeMarketSellOrderByShares(
+        address user,
+        BetOutcome _outcome,
+        uint _shares
+    ) external;
 }

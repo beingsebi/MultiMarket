@@ -8,4 +8,8 @@ interface ITokenHolder {
         address to,
         uint amount
     ) external;
+
+    function transferFromFree(address from, address to, uint amount) external;
+
+    function freeBalances(address) external view returns (uint);
 }

@@ -262,6 +262,45 @@ contract EventHelper is TokenHolder {
         }
     }
 
+    function placeMarketOrderByShares(
+        uint _eventIndex,
+        uint _marketIndex,
+        BetOutcome _betOutcome,
+        OrderSide _orderSide,
+        uint _shares
+    ) external {
+        require(
+            _betOutcome == BetOutcome.Yes || _betOutcome == BetOutcome.No,
+            "Invalid bet outcome"
+        );
+        require(
+            _orderSide == OrderSide.Buy || _orderSide == OrderSide.Sell,
+            "Invalid order side"
+        );
+        require(_eventIndex < events.length, "Invalid event index");
+        require(_shares > 0, "Shares must be greater than 0");
+
+        IEvent _event = IEvent(events[_eventIndex]);
+
+        require(_marketIndex < _event.getMarketCount(), "Invalid market index");
+
+        if (_orderSide == OrderSide.Buy) {
+            _event.placeMarketBuyOrderByShares(
+                msg.sender,
+                _marketIndex,
+                _betOutcome,
+                _shares
+            );
+        } else {
+            _event.placeMarketSellOrderByShares(
+                msg.sender,
+                _marketIndex,
+                _betOutcome,
+                _shares
+            );
+        }
+    }
+
     function getAllEvents()
         external
         view

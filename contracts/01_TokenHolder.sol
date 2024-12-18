@@ -166,4 +166,14 @@ contract TokenHolder is Ownable {
         reservedBalances[from] -= amount;
         freeBalances[to] += amount;
     }
+
+    function transferFromFree(
+        address from,
+        address to,
+        uint amount
+    ) external onlyMarket {
+        require(freeBalances[from] >= amount, "Insufficient balance");
+        freeBalances[from] -= amount;
+        freeBalances[to] += amount;
+    }
 }

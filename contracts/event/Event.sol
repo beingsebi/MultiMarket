@@ -143,7 +143,7 @@ contract Event is Ownable {
         BetOutcome _betOutcome,
         uint _price,
         uint _shares
-    ) external {
+    ) external onlyOwner {
         require(_marketIndex < markets.length, "Invalid market index");
 
         IMarket _market = IMarket(markets[_marketIndex]);
@@ -157,12 +157,12 @@ contract Event is Ownable {
         BetOutcome _betOutcome,
         uint _price,
         uint _shares
-    ) external {
+    ) external onlyOwner {
         require(_marketIndex < markets.length, "Invalid market index");
 
         IMarket _market = IMarket(markets[_marketIndex]);
 
-        return _market.placeLimitSellOrder(user, _betOutcome, _price, _shares);
+        _market.placeLimitSellOrder(user, _betOutcome, _price, _shares);
     }
 
     function getAllMarkets()
@@ -179,5 +179,25 @@ contract Event is Ownable {
         }
 
         return (_marketsTitles, _marketsDescriptions);
+    }
+
+    function placeMarketBuyOrderByShares(
+        address user,
+        uint _marketIndex,
+        BetOutcome _betOutcome,
+        uint _shares
+    ) external onlyOwner {
+        IMarket _market = IMarket(markets[_marketIndex]);
+        _market.placeMarketBuyOrderByShares(user, _betOutcome, _shares);
+    }
+
+    function placeMarketSellOrderByShares(
+        address user,
+        uint _marketIndex,
+        BetOutcome _betOutcome,
+        uint _shares
+    ) external onlyOwner {
+        IMarket _market = IMarket(markets[_marketIndex]);
+        _market.placeMarketSellOrderByShares(user, _betOutcome, _shares);
     }
 }

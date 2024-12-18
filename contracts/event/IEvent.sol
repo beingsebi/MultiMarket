@@ -73,4 +73,18 @@ interface IEvent {
         external
         view
         returns (string[] memory, string[] memory);
+
+    function placeMarketBuyOrderByShares(
+        address user,
+        uint _marketIndex,
+        BetOutcome _betOutcome,
+        uint _shares
+    ) external;
+
+    function placeMarketSellOrderByShares(
+        address user,
+        uint _marketIndex,
+        BetOutcome _betOutcome,
+        uint _shares
+    ) external;
 }
