@@ -1,22 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { getContractBalanceInETH } from "../utils/contractServices";
-import { getBalances } from "../utils/services";
+import React, { useState, useEffect } from 'react';
+import { getBalances } from '../utils/services';
 
 function ContractInfo({ account }) {
-  const [balance, setBalance] = useState(null);
+  const [balances, setBalances] = useState({
+    freeBalance: null,
+    reservedBalance: null,
+    totalBalance: null,
+  });
 
   useEffect(() => {
-    const fetchBalance = async () => {
-      const balanceInETH = await getContractBalanceInETH();
-      setBalance(balanceInETH);
-      console.log(getBalances(account));
+    const fetchBalances = async () => {
+      const accountBalances = await getBalances(account);
+      if (accountBalances) {
+        setBalances(accountBalances);
+      }
     };
-    fetchBalance();
-  }, []);
+    fetchBalances();
+  }, [account]);
 
   return (
     <div>
-      <h2>Contract Balance: {balance} ETH</h2>
+      <h2>Contract Balances</h2>
+      <p>Free Balance: {balances.freeBalance} USDC</p>
+      <p>Reserved Balance: {balances.reservedBalance} USDC</p>
+      <p>Total Balance: {balances.totalBalance} USDC</p>
       <p>Connected Account: {account}</p>
     </div>
   );

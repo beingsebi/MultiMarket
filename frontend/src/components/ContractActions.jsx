@@ -32,7 +32,7 @@ function ContractActions() {
           type="text"
           value={depositValue}
           onChange={(e) => setDepositValue(e.target.value)}
-          placeholder="Amount in ETH"
+          placeholder="Amount in USDC"
         />
         <button onClick={handleDeposit}>Deposit Funds</button>
       </div>
