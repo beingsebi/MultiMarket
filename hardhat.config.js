@@ -17,11 +17,13 @@ module.exports = {
   },
   defaultNetwork: "sepolia",
   networks: {
-    hardhat: {},
-    sepolia: {
-      url: API_URL,
-      accounts: [`0x${PRIVATE_KEY}`]
-    }
+    hardhat: {
+      chainId: 1337 // Default chain ID for Hardhat Network
+    },
+    // sepolia: {
+    //   url: API_URL,
+    //   accounts: [`0x${PRIVATE_KEY}`]
+    // }
   },
   // contractSizer: {
   //   runOnCompile: true, // Automatically check sizes when compiling
