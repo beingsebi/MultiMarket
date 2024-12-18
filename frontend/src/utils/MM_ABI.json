@@ -641,7 +641,40 @@
     "stateMutability": "nonpayable",
     "type": "function"
   },
-    {
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_eventIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_marketIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum BetOutcome",
+        "name": "_betOutcome",
+        "type": "uint8"
+      },
+      {
+        "internalType": "enum OrderSide",
+        "name": "_orderSide",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_shares",
+        "type": "uint256"
+      }
+    ],
+    "name": "placeMarketOrderByShares",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
@@ -665,6 +698,29 @@
       }
     ],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "transferFromFree",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
