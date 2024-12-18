@@ -15,15 +15,13 @@ module.exports = {
       viaIR: true, 
     },
   },
-  // defaultNetwork: "sepolia",
+  defaultNetwork: "sepolia",
   networks: {
-    hardhat: {
-      chainId: 1337 // Default chain ID for Hardhat Network
-    },
-    // sepolia: {
-    //   url: API_URL,
-    //   accounts: [`0x${PRIVATE_KEY}`]
-    // }
+    hardhat: {},
+    sepolia: {
+      url: API_URL,
+      accounts: [`0x${PRIVATE_KEY}`]
+    }
   },
   // contractSizer: {
   //   runOnCompile: true, // Automatically check sizes when compiling
