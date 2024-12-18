@@ -15,7 +15,7 @@ module.exports = {
       viaIR: true, 
     },
   },
-  defaultNetwork: "sepolia",
+  // defaultNetwork: "sepolia",
   networks: {
     hardhat: {
       chainId: 1337 // Default chain ID for Hardhat Network
