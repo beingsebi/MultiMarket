@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
 import ConnectWalletButton from "./components/ConnectWalletButton";
 import ContractInfo from "./components/ContractInfo";
+import MMEvents from "./components/MMEvents";
+import MMEvent from "./components/MMEvent";
 import ContractActions from "./components/ContractActions";
 import { requestAccount } from "./utils/contractServices";
 import { ToastContainer } from "react-toastify";
@@ -29,17 +33,28 @@ function App() {
   });
 
   return (
-    <div className="app">
+    <Router>
       <ToastContainer />
-      {!account ? (
-        <ConnectWalletButton setAccount={setAccount} />
-      ) : (
-        <div className="contract-interactions">
-          <ContractInfo account={account} />
-          <ContractActions />
-        </div>
-      )}
-    </div>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            !account ? (
+              <ConnectWalletButton setAccount={setAccount} />
+            ) : (
+              <React.Fragment>
+                <div className="contract-interactions">
+                  <ContractInfo account={account} />
+                  <ContractActions />
+                </div>
+                <MMEvents />
+              </React.Fragment>
+            )
+          }
+        />
+        <Route path="/event/:eventIndex" element={<MMEvent />} />
+      </Routes>
+    </Router>
   );
 }
 
