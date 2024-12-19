@@ -3,37 +3,64 @@ import USDC_ABI from "./abis/USDC_ABI.json";
 import MM_ABI from "./abis/MM_ABI.json";
 import { MM_CONTRACT_ADDRESS, USD_CONTRACT_ADDRESS } from "./constants";
 
+let cachedProvider = null;
+let cachedSigner = null;
+let cachedMMContract = null;
+let cachedUSDCContract = null;
+
+const BUY_ORDER = 0;
+const SELL_ORDER = 1;
 
 const getProviderAndSigner = async () => {
+  if (cachedProvider && cachedSigner) {
+    return { provider: cachedProvider, signer: cachedSigner };
+  }
+
   if (typeof window.ethereum !== "undefined") {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
+    cachedProvider = provider;
+    cachedSigner = signer;
     return { provider, signer };
-  } else {
-    console.error("Please install MetaMask!");
-    return null;
-  }
-}
-
-// Function to initialize the provider, signer, and contracts
-const initializeContracts = async () => {
-  if (typeof window.ethereum !== "undefined") {
-    const { provider, signer } = await getProviderAndSigner();
-    console.log("Provider and signer initialized!");
-    console.log("Provider: ", provider);
-    console.log("Signer: ", signer);   
-    const MMContract = new ethers.Contract(MM_CONTRACT_ADDRESS, MM_ABI, signer);
-    console.log("MMContract: ", MMContract);
-    const usdcContract = new ethers.Contract(USD_CONTRACT_ADDRESS, USDC_ABI, signer);
-    console.log("usdcContract: ", usdcContract);
-    return { provider, signer, MMContract, usdcContract };
   } else {
     console.error("Please install MetaMask!");
     return null;
   }
 };
 
-// Function to get balances
+const initializeContracts = async () => {
+  if (cachedMMContract && cachedUSDCContract) {
+    return {
+      provider: cachedProvider,
+      signer: cachedSigner,
+      MMContract: cachedMMContract,
+      usdcContract: cachedUSDCContract,
+    };
+  }
+
+  const { provider, signer } = await getProviderAndSigner();
+  if (!provider || !signer) return null;
+
+  const MMContract = new ethers.Contract(MM_CONTRACT_ADDRESS, MM_ABI, signer);
+  const usdcContract = new ethers.Contract(USD_CONTRACT_ADDRESS, USDC_ABI, signer);
+
+  cachedMMContract = MMContract;
+  cachedUSDCContract = usdcContract;
+
+  return { provider, signer, MMContract, usdcContract };
+};
+
+export const requestAccount = async () => {
+  try {
+    const { provider } = await getProviderAndSigner();
+    const accounts = await provider.send("eth_requestAccounts", []);
+    return accounts[0]; // Return the first account
+  } catch (error) {
+    console.error("Error requesting account:", error.message);
+    return null;
+  }
+};
+
 export const getBalances = async (address) => {
   try {
     const { MMContract } = await initializeContracts();
@@ -54,7 +81,6 @@ export const getBalances = async (address) => {
   }
 };
 
-// Function to deposit USDC
 export const depositUSDC = async (amount) => {
   console.log("Deposit amount: ", amount);
   const parsedAmount = ethers.utils.parseUnits(amount.toString(), 6);
@@ -103,7 +129,7 @@ export const getAllEvents = async () => {
     console.error("Error fetching event details:", error);
     return [];
   }
-}
+};
 
 export const getEvent = async (eventIndex) => {
   try {
@@ -150,7 +176,7 @@ export const placeLimitBuyOrder = async (eventIndex, marketIndex, betOutcome, pr
       eventIndex,
       marketIndex,
       betOutcome,
-      0, // Order type: 0 for Buy
+      BUY_ORDER, // Order type: 0 for Buy
       ethers.utils.parseUnits(price.toString(), 6),
       ethers.BigNumber.from(shares)
     );
@@ -176,7 +202,7 @@ export const placeLimitSellOrder = async (eventIndex, marketIndex, betOutcome, p
       eventIndex,
       marketIndex,
       betOutcome,
-      1, // Order type: 1 for Sell
+      SELL_ORDER, // Order type: 1 for Sell
       ethers.utils.parseUnits(price.toString(), 6),
       ethers.BigNumber.from(shares)
     );
