@@ -1,27 +1,25 @@
 import React, { useState } from "react";
-// import { withdrawFund } from "../utils/contractServices";
-import { depositUSDC } from "../utils/services";
+import { depositUSDC, withdrawUSDC } from "../utils/services";
 import { toast } from "react-toastify";
 
 function ContractActions() {
   const [depositValue, setDepositValue] = useState("");
+  const [withdrawValue, setWithdrawValue] = useState("");
 
   const handleDeposit = async () => {
-    try {
-      await depositUSDC(depositValue);
-    } catch (error) {
-      toast.error(error?.reason);
+    const error = await depositUSDC(depositValue);
+    if (error) {
+      toast.error(error?.reason || "An unexpected error occurred");
     }
     setDepositValue("");
   };
 
   const handleWithdraw = async () => {
-    try {
-      // await withdrawFund();
-      console.log("Withdraw Funds");
-    } catch (error) {
-      toast.error(error?.reason);
+    const error = await withdrawUSDC(withdrawValue);
+    if (error) {
+      toast.error(error?.reason || "An unexpected error occurred");
     }
+    setWithdrawValue("");
   };
 
   return (
@@ -38,6 +36,12 @@ function ContractActions() {
       </div>
       <br />
       <div>
+        <input
+          type="text"
+          value={withdrawValue}
+          onChange={(e) => setWithdrawValue(e.target.value)}
+          placeholder="Amount in USDC"
+        />
         <button onClick={handleWithdraw}>Withdraw Funds</button>
       </div>
     </div>
