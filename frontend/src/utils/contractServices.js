@@ -1,5 +1,5 @@
-import USDC_ABI from "./USDC_ABI.json";
-import MM_ABI from "./MM_ABI.json";
+import USDC_ABI from "./abis/USDC_ABI.json";
+import MM_ABI from "./abis/MM_ABI.json";
 import { ethers } from "ethers";
 // import { CONTRACT_ADDRESS } from "./constants";
 import { USD_CONTRACT_ADDRESS, MM_CONTRACT_ADDRESS } from "./constants";
