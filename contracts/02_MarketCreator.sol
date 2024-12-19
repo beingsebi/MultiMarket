@@ -209,4 +209,18 @@ contract MarketCreator is TokenHolder {
         require(_eventIndex < events.length, "Invalid event index");
         return IEvent(events[_eventIndex]).getAllMarkets();
     }
+
+    function resolveMarket(
+        uint _eventIndex,
+        uint _marketIndex,
+        BetOutcome _winningOutcome
+    ) external {
+        require(_eventIndex < events.length, "Invalid event index");
+        require(
+            msg.sender == eventToOwner[events[_eventIndex]],
+            "Only the event owner can resolve markets"
+        );
+        IEvent _event = IEvent(events[_eventIndex]);
+        _event.resolveMarket(_marketIndex, _winningOutcome);
+    }
 }

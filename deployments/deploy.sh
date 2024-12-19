@@ -44,13 +44,12 @@ echo " "
 
 
 # Create an event
-npx hardhat run scripts/createEvent.js --network localhost
+PRIVATE_KEY=df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e npx hardhat run scripts/createEvent.js --network localhost
 
 
 # Create 2 markets
-npx hardhat run scripts/createMarket.js --network localhost
+PRIVATE_KEY=df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e npx hardhat run scripts/createMarket.js --network localhost
 # npx hardhat run scripts/createMarket.js --network localhost
-
 
 # Get the event
 npx hardhat run scripts/getEvent.js --network localhost
@@ -94,3 +93,5 @@ echo "  "
 PUBLIC_ADDRESS=0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199 npx hardhat run scripts/getPositions.js --network localhost
 
 PUBLIC_ADDRESS=0xdD2FD4581271e230360230F9337D5c0430Bf44C0 npx hardhat run scripts/getPositions.js --network localhost
+
+PRIVATE_KEY=df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e OUTCOME=0 npx hardhat run scripts/resolveMarket.js --network localhost

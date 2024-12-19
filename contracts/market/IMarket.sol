@@ -12,32 +12,34 @@ interface IMarket {
     function getMarket() external view returns (string memory, string memory);
 
     function placeLimitBuyOrder(
-        address user,
+        address _user,
         BetOutcome _outcome,
         uint _price,
         uint _shares
     ) external;
 
     function placeLimitSellOrder(
-        address user,
+        address _user,
         BetOutcome _outcome,
         uint _price,
         uint _shares
     ) external;
 
     function getPositions(
-        address user
+        address _user
     ) external view returns (uint, uint, uint, uint);
 
     function placeMarketBuyOrderByShares(
-        address user,
+        address _user,
         BetOutcome _outcome,
         uint _shares
     ) external;
 
     function placeMarketSellOrderByShares(
-        address user,
+        address _user,
         BetOutcome _outcome,
         uint _shares
     ) external;
+
+    function resolveMarket(BetOutcome _winningOutcome) external;
 }

@@ -200,4 +200,13 @@ contract Event is Ownable {
         IMarket _market = IMarket(markets[_marketIndex]);
         _market.placeMarketSellOrderByShares(user, _betOutcome, _shares);
     }
+
+    function resolveMarket(
+        uint _marketIndex,
+        BetOutcome _winningOutcome
+    ) external onlyOwner {
+        require(_marketIndex < markets.length, "Invalid market index");
+        IMarket _market = IMarket(markets[_marketIndex]);
+        _market.resolveMarket(_winningOutcome);
+    }
 }

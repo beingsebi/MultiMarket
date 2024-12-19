@@ -87,4 +87,9 @@ interface IEvent {
         BetOutcome _betOutcome,
         uint _shares
     ) external;
+
+    function resolveMarket(
+        uint _marketIndex,
+        BetOutcome _winningOutcome
+    ) external;
 }

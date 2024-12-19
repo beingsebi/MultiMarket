@@ -2,9 +2,9 @@
 
 pragma solidity >=0.8.28 <0.9.0;
 
-import "./01_LimitOrdersMarket.sol";
+import "./01_LimitOrders.sol";
 
-contract Market is LimitOrdersMarket {
+contract MarketOrders is LimitOrders {
     constructor(
         address _owner,
         uint16 _decimals,
@@ -13,7 +13,7 @@ contract Market is LimitOrdersMarket {
         string memory _description,
         address _tokenHolderAddress
     )
-        LimitOrdersMarket(
+        LimitOrders(
             _owner,
             _decimals,
             _granularity,
@@ -47,7 +47,6 @@ contract Market is LimitOrdersMarket {
             _tryPrice <= 10 ** decimals && _shares > 0;
             _tryPrice += 10 ** (decimals - granularity)
         ) {
-            uint oppositePrice = 10 ** decimals - _tryPrice;
             //match with sell orders
             for (
                 uint _tryIndexInOB = 0;
@@ -85,42 +84,47 @@ contract Market is LimitOrdersMarket {
                 }
             }
 
-            //match with buy orders of opposite outcome
-            for (
-                uint _tryIndexInOB = 0;
-                _tryIndexInOB <
-                orderBook[_oppositeOutcome][OrderSide.Buy][oppositePrice]
-                    .length &&
-                    _shares > 0;
-                _tryIndexInOB++
-            ) {
-                if (
-                    orderBook[_oppositeOutcome][OrderSide.Buy][oppositePrice][
-                        _tryIndexInOB
-                    ].isActive
+            // don't generate shares if the market is resolved
+            if (!isResolved) {
+                uint oppositePrice = 10 ** decimals - _tryPrice;
+                for (
+                    //match with buy orders of opposite outcome
+                    uint _tryIndexInOB = 0;
+                    _tryIndexInOB <
+                    orderBook[_oppositeOutcome][OrderSide.Buy][oppositePrice]
+                        .length &&
+                        _shares > 0;
+                    _tryIndexInOB++
                 ) {
-                    Order storage _tryOrder = orderBook[_oppositeOutcome][
-                        OrderSide.Buy
-                    ][oppositePrice][_tryIndexInOB];
+                    if (
+                        orderBook[_oppositeOutcome][OrderSide.Buy][
+                            oppositePrice
+                        ][_tryIndexInOB].isActive
+                    ) {
+                        Order storage _tryOrder = orderBook[_oppositeOutcome][
+                            OrderSide.Buy
+                        ][oppositePrice][_tryIndexInOB];
 
-                    uint _matchedShares = _shares < _tryOrder.remainingShares
-                        ? _shares
-                        : _tryOrder.remainingShares;
+                        uint _matchedShares = _shares <
+                            _tryOrder.remainingShares
+                            ? _shares
+                            : _tryOrder.remainingShares;
 
-                    _executeGeneratingMarketOrder(
-                        _tryOrder,
-                        user,
-                        _outcome,
-                        _oppositeOutcome,
-                        _matchedShares,
-                        _tryPrice,
-                        oppositePrice
-                    );
+                        _executeGeneratingMarketOrder(
+                            _tryOrder,
+                            user,
+                            _outcome,
+                            _oppositeOutcome,
+                            _matchedShares,
+                            _tryPrice,
+                            oppositePrice
+                        );
 
-                    filledShares += _matchedShares;
-                    _shares -= _matchedShares;
+                        filledShares += _matchedShares;
+                        _shares -= _matchedShares;
 
-                    totalCost += _matchedShares * _tryPrice;
+                        totalCost += _matchedShares * _tryPrice;
+                    }
                 }
             }
         }
@@ -213,9 +217,10 @@ contract Market is LimitOrdersMarket {
                 _user,
                 _matchedShares * _price
             );
-        } //TODO Check if this is correct
+        }
 
         _order.remainingShares -= _matchedShares;
+        _order.currentTotalPrice += _matchedShares * _price;
         _checkAndUpdateOrderStatus(_order);
     }
 
@@ -255,6 +260,7 @@ contract Market is LimitOrdersMarket {
         issuedShares += _matchedShares;
 
         _order.remainingShares -= _matchedShares;
+        _order.currentTotalPrice += _matchedShares * _priceOrder;
         _checkAndUpdateOrderStatus(_order);
     }
 }

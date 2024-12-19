@@ -2,7 +2,7 @@
 
 pragma solidity >=0.8.28 <0.9.0;
 
-import "../market/02_Market.sol";
+import "../market/03_MarketResolver.sol";
 
 // TODO: make it ownable, and after deployment, transfer ownership to the main contract
 contract MarketFactory {

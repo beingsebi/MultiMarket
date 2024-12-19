@@ -7,7 +7,7 @@ import "../utils/OrderDefinitions.sol";
 import "./ITokenHolder.sol";
 import "hardhat/console.sol";
 
-contract LimitOrdersMarket is Ownable {
+contract LimitOrders is Ownable {
     uint16 public immutable decimals;
     // 3 => minPrice = 1e-3 tokens
     uint16 public immutable granularity;
@@ -27,6 +27,8 @@ contract LimitOrdersMarket is Ownable {
     mapping(BetOutcome => BetOutcome) oppositeBetOutcome;
     ITokenHolder internal tokenHolder;
 
+    bool isResolved;
+
     event marketOrderFilled(
         address indexed user,
         BetOutcome indexed outcome,
@@ -36,6 +38,14 @@ contract LimitOrdersMarket is Ownable {
         uint filledShares,
         uint unfilledShares
     );
+
+    modifier OnlyOwnerOrSelf() {
+        require(
+            msg.sender == owner() || msg.sender == address(this),
+            "Only owner or self can call this function"
+        );
+        _;
+    }
 
     constructor(
         address _owner,
@@ -53,6 +63,8 @@ contract LimitOrdersMarket is Ownable {
         oppositeBetOutcome[BetOutcome.Yes] = BetOutcome.No;
         oppositeBetOutcome[BetOutcome.No] = BetOutcome.Yes;
         tokenHolder = ITokenHolder(_tokenHolderAddress);
+
+        isResolved = false;
     }
 
     /**
@@ -94,7 +106,8 @@ contract LimitOrdersMarket is Ownable {
             initialShares: _shares,
             remainingShares: _shares,
             timestamp: block.timestamp,
-            isActive: true
+            isActive: true,
+            currentTotalPrice: 0
         });
 
         orderBook[_outcome][OrderSide.Buy][_price].push(order);
@@ -123,7 +136,8 @@ contract LimitOrdersMarket is Ownable {
             initialShares: _shares,
             remainingShares: _shares,
             timestamp: block.timestamp,
-            isActive: true
+            isActive: true,
+            currentTotalPrice: 0
         });
 
         freeShares[_outcome][user] -= _shares;
@@ -186,37 +200,39 @@ contract LimitOrdersMarket is Ownable {
             }
 
             // match buy order with buy order of opposite outcome
-            uint _oppositePrice = 10 ** decimals - _tryPrice;
-            for (
-                uint _tryIndexInOB = 0;
-                _tryIndexInOB <
-                orderBook[_oppositeOutcome][OrderSide.Buy][_oppositePrice]
-                    .length &&
-                    order.remainingShares > 0;
-                _tryIndexInOB++
-            ) {
-                Order storage _tryOrder = orderBook[_oppositeOutcome][
-                    OrderSide.Buy
-                ][_oppositePrice][_tryIndexInOB];
+            if (!isResolved) {
+                uint _oppositePrice = 10 ** decimals - _tryPrice;
+                for (
+                    uint _tryIndexInOB = 0;
+                    _tryIndexInOB <
+                    orderBook[_oppositeOutcome][OrderSide.Buy][_oppositePrice]
+                        .length &&
+                        order.remainingShares > 0;
+                    _tryIndexInOB++
+                ) {
+                    Order storage _tryOrder = orderBook[_oppositeOutcome][
+                        OrderSide.Buy
+                    ][_oppositePrice][_tryIndexInOB];
 
-                if (_tryOrder.isActive) {
-                    uint _matchedShares = order.remainingShares <
-                        _tryOrder.remainingShares
-                        ? order.remainingShares
-                        : _tryOrder.remainingShares;
+                    if (_tryOrder.isActive) {
+                        uint _matchedShares = order.remainingShares <
+                            _tryOrder.remainingShares
+                            ? order.remainingShares
+                            : _tryOrder.remainingShares;
 
-                    _executeGeneratingTrade(
-                        order,
-                        _tryOrder,
-                        _price,
-                        _oppositePrice,
-                        _outcome,
-                        _oppositeOutcome,
-                        _matchedShares
-                    );
+                        _executeGeneratingTrade(
+                            order,
+                            _tryOrder,
+                            _price,
+                            _oppositePrice,
+                            _outcome,
+                            _oppositeOutcome,
+                            _matchedShares
+                        );
 
-                    _checkAndUpdateOrderStatus(order);
-                    _checkAndUpdateOrderStatus(_tryOrder);
+                        _checkAndUpdateOrderStatus(order);
+                        _checkAndUpdateOrderStatus(_tryOrder);
+                    }
                 }
             }
         }
@@ -300,6 +316,8 @@ contract LimitOrdersMarket is Ownable {
         _buyOrder.remainingShares -= _matchedShares;
         _sellOrder.remainingShares -= _matchedShares;
 
+        _buyOrder.currentTotalPrice += _matchedShares * _price;
+        _sellOrder.currentTotalPrice += _matchedShares * _price;
         // TODO: emit event
     }
 
@@ -338,12 +356,41 @@ contract LimitOrdersMarket is Ownable {
 
         _buyOrder1.remainingShares -= _matchedShares;
         _buyOrder2.remainingShares -= _matchedShares;
+
+        _buyOrder1.currentTotalPrice += _matchedShares * _price1;
+        _buyOrder2.currentTotalPrice += _matchedShares * _price2;
     }
 
     function _checkAndUpdateOrderStatus(Order storage _order) internal {
         if (_order.remainingShares == 0) {
             _order.isActive = false;
             userActiveOrdersCount[_order.user]--;
+        }
+    }
+
+    // TODO write js to test this
+    function cancelOrder(
+        BetOutcome _outcome,
+        OrderSide _side,
+        uint _price,
+        uint _orderIndex
+    ) public OnlyOwnerOrSelf {
+        Order storage _order = orderBook[_outcome][_side][_price][_orderIndex];
+        if (!_order.isActive) {
+            return;
+        }
+
+        _order.isActive = false;
+
+        if (_side == OrderSide.Buy) {
+            tokenHolder.transferFromReserved(
+                _order.user,
+                _order.user,
+                _order.initialShares * _price - _order.currentTotalPrice
+            );
+        } else {
+            freeShares[_outcome][_order.user] += _order.remainingShares;
+            reservedShares[_outcome][_order.user] -= _order.remainingShares;
         }
     }
 }
