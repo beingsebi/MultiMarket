@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import { toast } from 'react-toastify';
 import USDC_ABI from "./abis/USDC_ABI.json";
 import MM_ABI from "./abis/MM_ABI.json";
 import { MM_CONTRACT_ADDRESS, USD_CONTRACT_ADDRESS } from "./constants";
@@ -186,18 +187,18 @@ export const getEvent = async (eventIndex) => {
   }
 };
 
-export const placeLimitBuyOrder = async (eventIndex, marketIndex, betOutcome, price, shares) => {
+const placeLimitOrder = async (eventIndex, marketIndex, betOutcome, price, shares, orderType) => {
   try {
     const { MMContract } = await initializeContracts();
     if (!MMContract) return;
 
-    console.log("Placing a limit buy order...");
+    console.log(`Placing a limit ${orderType === BUY_ORDER ? 'buy' : 'sell'} order...`);
 
     const tx = await MMContract.placeLimitOrder(
       eventIndex,
       marketIndex,
       betOutcome,
-      BUY_ORDER, // Order type: 0 for Buy
+      orderType,
       ethers.utils.parseUnits(price.toString(), 6),
       ethers.BigNumber.from(shares)
     );
@@ -205,37 +206,21 @@ export const placeLimitBuyOrder = async (eventIndex, marketIndex, betOutcome, pr
     console.log("Transaction sent. Waiting for confirmation...");
     const receipt = await tx.wait();
 
-    console.log("Limit buy order placed successfully!");
+    console.log(`Limit ${orderType === BUY_ORDER ? 'buy' : 'sell'} order placed successfully!`);
     console.log(`Transaction Hash: ${receipt.transactionHash}`);
   } catch (error) {
-    console.error("Error placing limit buy order:", error);
+    console.error(`Error placing limit ${orderType === BUY_ORDER ? 'buy' : 'sell'} order:`, error);
+    toast.error(`Error placing limit ${orderType === BUY_ORDER ? 'buy' : 'sell'} order: ${error.reason}`);
+    return error;
   }
 };
 
+export const placeLimitBuyOrder = async (eventIndex, marketIndex, betOutcome, price, shares) => {
+  return placeLimitOrder(eventIndex, marketIndex, betOutcome, price, shares, BUY_ORDER);
+};
+
 export const placeLimitSellOrder = async (eventIndex, marketIndex, betOutcome, price, shares) => {
-  try {
-    const { MMContract } = await initializeContracts();
-    if (!MMContract) return;
-
-    console.log("Placing a limit sell order...");
-
-    const tx = await MMContract.placeLimitOrder(
-      eventIndex,
-      marketIndex,
-      betOutcome,
-      SELL_ORDER, // Order type: 1 for Sell
-      ethers.utils.parseUnits(price.toString(), 6),
-      ethers.BigNumber.from(shares)
-    );
-
-    console.log("Transaction sent. Waiting for confirmation...");
-    const receipt = await tx.wait();
-
-    console.log("Limit sell order placed successfully!");
-    console.log(`Transaction Hash: ${receipt.transactionHash}`);
-  } catch (error) {
-    console.error("Error placing limit sell order:", error);
-  }
+  return placeLimitOrder(eventIndex, marketIndex, betOutcome, price, shares, SELL_ORDER);
 };
 
 export const placeMarketOrder = async (eventIndex, marketIndex, betOutcome, orderSide, shares) => {

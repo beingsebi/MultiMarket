@@ -30,7 +30,9 @@ const PlaceOrderForm = ({ eventIndex, marketIndex }) => {
             <label>
                 Price:
                 <input
-                    type="text"
+                    type="number"
+                    min="0"
+                    max="1"
                     name="price"
                     value={orderData.price}
                     onChange={handleInputChange}
