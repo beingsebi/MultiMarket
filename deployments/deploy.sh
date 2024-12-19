@@ -83,7 +83,6 @@ PRIVATE_KEY=de9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b4ee0 OUT
 
 PUBLIC_ADDRESS=0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199 npx hardhat run scripts/getPositions.js --network localhost
 
-
 # Get the positions
 PUBLIC_ADDRESS=0xdD2FD4581271e230360230F9337D5c0430Bf44C0 npx hardhat run scripts/getPositions.js --network localhost
 
