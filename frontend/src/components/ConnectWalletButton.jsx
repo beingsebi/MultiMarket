@@ -1,5 +1,5 @@
 import React from "react";
-import { requestAccount } from "../utils/contractServices";
+import {requestAccount} from "../utils/services";
 
 function ConnectWalletButton({ setAccount }) {
   const connectWallet = async () => {

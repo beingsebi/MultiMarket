@@ -6,7 +6,7 @@ import ContractInfo from "./components/ContractInfo";
 import MMEvents from "./components/MMEvents";
 import MMEvent from "./components/MMEvent";
 import ContractActions from "./components/ContractActions";
-import { requestAccount } from "./utils/contractServices";
+import {requestAccount} from "./utils/services";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

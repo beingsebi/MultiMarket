@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { depositFund } from "../utils/contractServices";
-import { withdrawFund } from "../utils/contractServices";
+// import { withdrawFund } from "../utils/contractServices";
 import { depositUSDC } from "../utils/services";
 import { toast } from "react-toastify";
 
@@ -18,7 +17,8 @@ function ContractActions() {
 
   const handleWithdraw = async () => {
     try {
-      await withdrawFund();
+      // await withdrawFund();
+      console.log("Withdraw Funds");
     } catch (error) {
       toast.error(error?.reason);
     }
