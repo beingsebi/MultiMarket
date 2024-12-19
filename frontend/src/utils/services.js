@@ -107,6 +107,27 @@ export const depositUSDC = async (amount) => {
     console.log("Deposit successful!");
   } catch (error) {
     console.error("Error during deposit:", error);
+    return error;
+  }
+};
+
+export const withdrawUSDC = async (amount) => {
+  console.log("Withdraw amount: ", amount);
+  const parsedAmount = ethers.utils.parseUnits(amount.toString(), 6);
+  try {
+    const { MMContract } = await initializeContracts();
+    if (!MMContract) {
+      console.error("Contract not initialized!");
+      return;
+    }
+
+    console.log(`Withdrawing ${parsedAmount} USDC from the MultiMarket contract...`);
+    const withdrawTx = await MMContract.withdraw(parsedAmount);
+    await withdrawTx.wait();
+    console.log("Withdrawal successful!");
+  } catch (error) {
+    console.error("Error during withdrawal:", error);
+    return error;
   }
 };
 
@@ -214,6 +235,31 @@ export const placeLimitSellOrder = async (eventIndex, marketIndex, betOutcome, p
     console.log(`Transaction Hash: ${receipt.transactionHash}`);
   } catch (error) {
     console.error("Error placing limit sell order:", error);
+  }
+};
+
+export const placeMarketOrder = async (eventIndex, marketIndex, betOutcome, orderSide, shares) => {
+  try {
+    const { MMContract } = await initializeContracts();
+    if (!MMContract) return;
+
+    console.log("Placing a market order...");
+
+    const tx = await MMContract.placeMarketOrderByShares(
+      eventIndex,
+      marketIndex,
+      betOutcome,
+      orderSide,
+      ethers.BigNumber.from(shares)
+    );
+
+    console.log("Transaction sent. Waiting for confirmation...");
+    const receipt = await tx.wait();
+
+    console.log("Market order placed successfully!");
+    console.log(`Transaction Hash: ${receipt.transactionHash}`);
+  } catch (error) {
+    console.error("Error placing market order:", error);
   }
 };
 

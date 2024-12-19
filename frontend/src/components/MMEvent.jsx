@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { getEvent, getPositions } from '../utils/services';
 import PlaceOrderForm from './PlaceOrderForm';
 import PlaceSellOrderForm from './PlaceSellOrderForm';
+import PlaceMarketOrderForm from './PlaceMarketOrderForm';
 
 const MMEvent = () => {
     const { eventIndex } = useParams();
@@ -45,6 +46,8 @@ const MMEvent = () => {
                         <PlaceOrderForm eventIndex={eventIndex} marketIndex={index} />
                         <br />
                         <PlaceSellOrderForm eventIndex={eventIndex} marketIndex={index} />
+                        <br />
+                        <PlaceMarketOrderForm eventIndex={eventIndex} marketIndex={index} />
                         <div>
                             <h3>Positions</h3>
                             {positions.length > 0 && (
