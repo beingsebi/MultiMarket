@@ -8,6 +8,7 @@ let cachedProvider = null;
 let cachedSigner = null;
 let cachedMMContract = null;
 let cachedUSDCContract = null;
+let isRequestingAccounts = false;
 
 const BUY_ORDER = 0;
 const SELL_ORDER = 1;
@@ -18,11 +19,28 @@ const getProviderAndSigner = async () => {
   }
 
   if (typeof window.ethereum !== "undefined") {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    cachedProvider = provider;
-    cachedSigner = signer;
-    return { provider, signer };
+    if (isRequestingAccounts) {
+      console.warn("Already requesting accounts. Please wait.");
+      return null;
+    }
+
+    isRequestingAccounts = true;
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      cachedProvider = provider;
+      cachedSigner = signer;
+      return { provider, signer };
+    } catch (error) {
+      if (error.code === -32002) {
+        console.warn("Already processing eth_requestAccounts. Please wait.");
+      } else {
+        console.error("Error requesting accounts:", error);
+      }
+      return null;
+    } finally {
+      isRequestingAccounts = false;
+    }
   } else {
     console.error("Please install MetaMask!");
     return null;
