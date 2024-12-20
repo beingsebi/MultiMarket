@@ -263,4 +263,59 @@ contract MarketOrders is LimitOrders {
         _order.currentTotalPrice += _matchedShares * _priceOrder;
         _checkAndUpdateOrderStatus(_order);
     }
+
+    //TODO: keep track of active orders count
+    function getActiveOrders(
+        BetOutcome _outcome,
+        OrderSide _side,
+        address _user
+    ) external view returns (Order[] memory) {
+        uint activeOrderCount = 0;
+
+        for (
+            uint _price = 0;
+            _price <= 10 ** decimals;
+            _price += 10 ** granularity
+        ) {
+            for (
+                uint _index = 0;
+                _index < orderBook[_outcome][_side][_price].length;
+                _index++
+            ) {
+                if (
+                    orderBook[_outcome][_side][_price][_index].isActive &&
+                    orderBook[_outcome][_side][_price][_index].user == _user
+                ) {
+                    activeOrderCount++;
+                }
+            }
+        }
+
+        Order[] memory _orders = new Order[](activeOrderCount);
+        uint counter = 0;
+
+        for (
+            uint _price = 0;
+            _price <= 10 ** decimals;
+            _price += 10 ** granularity
+        ) {
+            for (
+                uint _index = 0;
+                _index < orderBook[_outcome][_side][_price].length;
+                _index++
+            ) {
+                if (
+                    orderBook[_outcome][_side][_price][_index].isActive &&
+                    orderBook[_outcome][_side][_price][_index].user == _user
+                ) {
+                    _orders[counter] = orderBook[_outcome][_side][_price][
+                        _index
+                    ];
+                    counter++;
+                }
+            }
+        }
+
+        return _orders;
+    }
 }

@@ -139,4 +139,34 @@ contract OrderPlacer is MarketCreator {
             );
         }
     }
+
+    function getActiveOrders(
+        uint _eventIndex,
+        uint _marketIndex,
+        BetOutcome _betOutcome,
+        OrderSide _orderSide,
+        address _user
+    ) external view returns (Order[] memory) {
+        require(
+            _betOutcome == BetOutcome.Yes || _betOutcome == BetOutcome.No,
+            "Invalid bet outcome"
+        );
+        require(
+            _orderSide == OrderSide.Buy || _orderSide == OrderSide.Sell,
+            "Invalid order side"
+        );
+        require(_eventIndex < events.length, "Invalid event index");
+
+        IEvent _event = IEvent(events[_eventIndex]);
+
+        require(_marketIndex < _event.getMarketCount(), "Invalid market index");
+
+        return
+            _event.getActiveOrders(
+                _marketIndex,
+                _betOutcome,
+                _orderSide,
+                _user
+            );
+    }
 }

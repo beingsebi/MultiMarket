@@ -209,4 +209,14 @@ contract Event is Ownable {
         IMarket _market = IMarket(markets[_marketIndex]);
         _market.resolveMarket(_winningOutcome);
     }
+
+    function getActiveOrders(
+        uint _marketIndex,
+        BetOutcome _betOutcome,
+        OrderSide _orderSide,
+        address _user
+    ) external view returns (Order[] memory) {
+        IMarket _market = IMarket(markets[_marketIndex]);
+        return _market.getActiveOrders(_betOutcome, _orderSide, _user);
+    }
 }

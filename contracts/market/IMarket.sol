@@ -42,4 +42,10 @@ interface IMarket {
     ) external;
 
     function resolveMarket(BetOutcome _winningOutcome) external;
+
+    function getActiveOrders(
+        BetOutcome _outcome,
+        OrderSide _side,
+        address _user
+    ) external view returns (Order[] memory);
 }

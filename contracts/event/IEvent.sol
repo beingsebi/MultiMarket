@@ -92,4 +92,11 @@ interface IEvent {
         uint _marketIndex,
         BetOutcome _winningOutcome
     ) external;
+
+    function getActiveOrders(
+        uint _marketIndex,
+        BetOutcome _betOutcome,
+        OrderSide _orderSide,
+        address _user
+    ) external view returns (Order[] memory);
 }
