@@ -267,6 +267,9 @@ export const placeMarketOrder = async (eventIndex, marketIndex, betOutcome, orde
 };
 
 export const getPositions = async (eventIndex, userAddress) => {
+  if (userAddress === null) {
+    return [];
+  }
   try {
     const { MMContract } = await initializeContracts();
     if (!MMContract) return null;

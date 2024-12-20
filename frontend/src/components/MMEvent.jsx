@@ -1,36 +1,47 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { getEvent, getPositions } from '../utils/services';
+import { requestAccount, getEvent, getPositions } from '../utils/services';
 import PlaceOrderForm from './PlaceOrderForm';
 import PlaceSellOrderForm from './PlaceSellOrderForm';
 import PlaceMarketOrderForm from './PlaceMarketOrderForm';
+import EventEmitter from "../utils/EventEmitter";
 
 const MMEvent = () => {
     const { eventIndex } = useParams();
     const [event, setEvent] = useState(null);
     const [positions, setPositions] = useState([]);
 
-    useEffect(() => {
-        const fetchEvent = async () => {
-            const eventDetails = await getEvent(eventIndex);
-            if (eventDetails) {
-                setEvent(eventDetails);
-            }
-        };
-        fetchEvent();
+    const fetchEvent = useCallback(async () => {
+        const eventDetails = await getEvent(eventIndex);
+        if (eventDetails) {
+            setEvent(eventDetails);
+        }
+    }, [eventIndex]);
+
+    const fetchPositions = useCallback(async () => {
+        const userAddress = await requestAccount();
+        const positions_req = await getPositions(eventIndex, userAddress);
+        setPositions(positions_req);
     }, [eventIndex]);
 
     useEffect(() => {
-        const fetchPositions = async () => {
-            const userAddress = await window.ethereum.request({ method: 'eth_accounts' }).then(accounts => accounts[0]);
-            const positions = await getPositions(eventIndex, userAddress);
-            setPositions(positions);
-        };
+        fetchEvent();
         fetchPositions();
-    }, [eventIndex]);
+
+        const handleAccountChanged = () => {
+            console.log("Account changed, fetching positions again");
+            fetchPositions();
+        };
+
+        EventEmitter.on("accountChanged", handleAccountChanged);
+
+        return () => {
+            EventEmitter.off("accountChanged", handleAccountChanged);
+        };
+    }, [eventIndex, fetchEvent, fetchPositions]);
 
     if (!event) {
-        return <div>Loading...</div>;
+        return <p>Couldn't retrieve the event. Please make sure to connect your wallet to view the event."</p>
     }
 
     return (
@@ -49,14 +60,20 @@ const MMEvent = () => {
                         <br />
                         <PlaceMarketOrderForm eventIndex={eventIndex} marketIndex={index} />
                         <div>
-                            <h3>Positions</h3>
-                            {positions.length > 0 && (
-                                <div>
-                                    <p>Free Yes Shares: {positions[index]?.freeYesShares}</p>
-                                    <p>Reserved Yes Shares: {positions[index]?.reservedYesShares}</p>
-                                    <p>Free No Shares: {positions[index]?.freeNoShares}</p>
-                                    <p>Reserved No Shares: {positions[index]?.reservedNoShares}</p>
-                                </div>
+                            {positions.length > 0 ? (
+                                <>
+                                    <h3>Positions</h3>
+                                    <div>
+                                        <p>Free Yes Shares: {positions[index]?.freeYesShares}</p>
+                                        <p>Reserved Yes Shares: {positions[index]?.reservedYesShares}</p>
+                                        <p>Free No Shares: {positions[index]?.freeNoShares}</p>
+                                        <p>Reserved No Shares: {positions[index]?.reservedNoShares}</p>
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <p>Please connect your wallet to view positions.</p>
+                                </>
                             )}
                         </div>
                     </li>

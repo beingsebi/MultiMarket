@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getBalances } from '../utils/services';
+import EventEmitter from "../utils/EventEmitter";
 
 function ContractInfo({ account }) {
   const [balances, setBalances] = useState({
@@ -17,6 +18,18 @@ function ContractInfo({ account }) {
     };
     fetchBalances();
   }, [account]);
+
+  useEffect(() => {
+    const handleAccountChanged = (newAccount) => {
+      console.log("Account changed to:", newAccount);
+    };
+
+    EventEmitter.on("accountChanged", handleAccountChanged);
+
+    return () => {
+      EventEmitter.off("accountChanged", handleAccountChanged);
+    };
+  }, []);
 
   return (
     <div>

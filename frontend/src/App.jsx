@@ -9,6 +9,7 @@ import ContractActions from "./components/ContractActions";
 import {requestAccount} from "./utils/services";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import EventEmitter from "./utils/EventEmitter";
 
 function App() {
   const [account, setAccount] = useState(null);
@@ -17,13 +18,17 @@ function App() {
     const fetchCurAccount = async () => {
       const account = await requestAccount();
       setAccount(account);
+      EventEmitter.emit("accountChanged", account);
     };
     fetchCurAccount();
   }, []);
 
   useEffect(() => {
-    const handleAccountChanged = (newAccounts) =>
-      setAccount(newAccounts.length > 0 ? newAccounts[0] : null);
+    const handleAccountChanged = (newAccounts) => {
+      const newAccount = newAccounts.length > 0 ? newAccounts[0] : null;
+      setAccount(newAccount);
+      EventEmitter.emit("accountChanged", newAccount);
+    };
     if (window.ethereum) {
       window.ethereum.on("accountsChanged", handleAccountChanged);
     }
