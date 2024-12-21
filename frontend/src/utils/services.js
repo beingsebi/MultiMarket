@@ -321,3 +321,27 @@ export const getActiveOrders = async (eventIndex, marketIndex, betOutcome, order
     return [];
   }
 };
+
+export const getCurrentPrice = async (eventIndex, marketIndex, betOutcome) => {
+  try {
+    const { MMContract } = await initializeContracts();
+    if (!MMContract) return null;
+
+    console.log("Fetching current price...");
+
+    const [priceNumerator, priceDenominator] = await MMContract.getCurrentPrice(
+      eventIndex,
+      marketIndex,
+      betOutcome
+    );
+
+    console.log("Current Price fetched successfully!");
+    return {
+      priceNumerator: ethers.utils.formatUnits(priceNumerator, 6).toString(),
+      priceDenominator: ethers.utils.formatUnits(priceDenominator, 6).toString(),
+    };
+  } catch (error) {
+    console.error("Error fetching current price:", error);
+    return null;
+  }
+};

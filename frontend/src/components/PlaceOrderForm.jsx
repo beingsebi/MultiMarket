@@ -9,6 +9,11 @@ const PlaceOrderForm = ({ eventIndex, marketIndex }) => {
         setOrderData({ ...orderData, [name]: value });
     };
 
+    const handleBetOutcomeChange = (e) => {
+        const { value } = e.target;
+        setOrderData({ ...orderData, betOutcome: parseInt(value, 10) });
+    };
+
     const handlePlaceOrder = async () => {
         const { betOutcome, price, shares } = orderData;
         await placeLimitBuyOrder(eventIndex, marketIndex, betOutcome, price, shares);
@@ -18,14 +23,14 @@ const PlaceOrderForm = ({ eventIndex, marketIndex }) => {
         <div>
             <label>
                 Bet Outcome:
-                <input
-                    type="number"
-                    min="0"
-                    max="1"
+                <select
                     name="betOutcome"
                     value={orderData.betOutcome}
-                    onChange={handleInputChange}
-                />
+                    onChange={handleBetOutcomeChange}
+                >
+                    <option value={0}>Buy</option>
+                    <option value={1}>Sell</option>
+                </select>
             </label>
             <label>
                 Price:

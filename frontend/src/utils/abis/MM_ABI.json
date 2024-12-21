@@ -188,6 +188,44 @@
     "type": "event"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_eventIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_marketIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum BetOutcome",
+        "name": "_outcome",
+        "type": "uint8"
+      },
+      {
+        "internalType": "enum OrderSide",
+        "name": "_side",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_price",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_orderIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "cancelOrder",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "contractBalance",
     "outputs": [
@@ -443,6 +481,11 @@
             "internalType": "uint256",
             "name": "currentTotalPrice",
             "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "index",
+            "type": "uint256"
           }
         ],
         "internalType": "struct Order[]",
@@ -490,6 +533,40 @@
         "internalType": "string[]",
         "name": "",
         "type": "string[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_eventIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_marketIndex",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum BetOutcome",
+        "name": "_betOutcome",
+        "type": "uint8"
+      }
+    ],
+    "name": "getCurrentPrice",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",

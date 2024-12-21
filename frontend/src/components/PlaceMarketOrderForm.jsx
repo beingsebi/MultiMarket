@@ -10,17 +10,13 @@ const PlaceMarketOrderForm = ({ eventIndex, marketIndex }) => {
     };
 
     const handleBetOutcomeChange = (e) => {
-        const value = parseInt(e.target.value, 10);
-        if (value === 0 || value === 1) {
-            setOrderData({ ...orderData, betOutcome: value });
-        }
+        const { value } = e.target;
+        setOrderData({ ...orderData, betOutcome: parseInt(value, 10) });
     };
 
     const handleOrderSideChange = (e) => {
-        const value = parseInt(e.target.value, 10);
-        if (value === 0 || value === 1) {
-            setOrderData({ ...orderData, orderSide: value });
-        }
+        const { value } = e.target;
+        setOrderData({ ...orderData, orderSide: parseInt(value, 10) });
     };
 
     const handlePlaceOrder = async () => {
@@ -32,25 +28,25 @@ const PlaceMarketOrderForm = ({ eventIndex, marketIndex }) => {
         <div>
             <label>
                 Bet Outcome:
-                <input
-                    type="number"
+                <select
                     name="betOutcome"
                     value={orderData.betOutcome}
                     onChange={handleBetOutcomeChange}
-                    min="0"
-                    max="1"
-                />
+                >
+                    <option value={0}>Buy</option>
+                    <option value={1}>Sell</option>
+                </select>
             </label>
             <label>
                 Order Side:
-                <input
-                    type="number"
+                <select
                     name="orderSide"
                     value={orderData.orderSide}
                     onChange={handleOrderSideChange}
-                    min="0"
-                    max="1"
-                />
+                >
+                    <option value={0}>Buy</option>
+                    <option value={1}>Sell</option>
+                </select>
             </label>
             <label>
                 Shares:

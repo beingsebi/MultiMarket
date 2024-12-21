@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { requestAccount, getActiveOrders } from '../utils/services';
+import { requestAccount, getActiveOrders, getCurrentPrice } from '../utils/services';
 
 const ActiveOrders = ({ marketIndex }) => {
   const { eventIndex } = useParams();
   const [orders, setOrders] = useState([]);
   const [orderType, setOrderType] = useState(0); // 'buy' or 'sell'
   const [betOutcome, setBetOutcome] = useState(0); // 0 for Yes, 1 for No
+  const [currentPrice, setCurrentPrice] = useState(null);
 
   const fetchOrders = useCallback(async () => {
     const userAddress = await requestAccount();
@@ -14,9 +15,15 @@ const ActiveOrders = ({ marketIndex }) => {
     setOrders(activeOrders);
   }, [eventIndex, marketIndex, orderType, betOutcome]);
 
+  const fetchCurrentPrice = useCallback(async () => {
+    const price = await getCurrentPrice(eventIndex, marketIndex, betOutcome);
+    setCurrentPrice(price);
+  }, [eventIndex, marketIndex, betOutcome]);
+
   useEffect(() => {
     fetchOrders();
-  }, [fetchOrders]);
+    fetchCurrentPrice();
+  }, [fetchOrders, fetchCurrentPrice]);
 
   return (
     <div>
@@ -38,6 +45,12 @@ const ActiveOrders = ({ marketIndex }) => {
         </label>
         <button onClick={fetchOrders}>Fetch Orders</button>
       </div>
+      {currentPrice && (
+        <div>
+          <h3>Current Price</h3>
+          <p>Buy price: {currentPrice.priceNumerator} | Sell price: {currentPrice.priceDenominator}</p>
+        </div>
+      )}
       <ul>
         {orders.map((order, index) => (
           <li key={index}>
