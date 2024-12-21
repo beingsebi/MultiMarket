@@ -60,7 +60,6 @@ contract MarketCreator is TokenHolder {
             "Insufficient balance"
         );
 
-        //TODO: add these as params
         require(
             bytes(_eventTitle).length >= 5,
             "Event title must be at least 5 characters long"

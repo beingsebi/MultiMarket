@@ -23,7 +23,6 @@ contract Market is MarketOrders {
         )
     {}
 
-    // TODO test
     function resolveMarket(BetOutcome _winningOutcome) external onlyOwner {
         require(
             _winningOutcome == BetOutcome.Yes ||

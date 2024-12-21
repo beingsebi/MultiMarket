@@ -86,47 +86,43 @@ contract MarketOrders is LimitOrders {
                 }
             }
 
-            // don't generate shares if the market is resolved
-            if (!isResolved) {
-                uint oppositePrice = 10 ** decimals - _tryPrice;
-                for (
-                    //match with buy orders of opposite outcome
-                    uint _tryIndexInOB = 0;
-                    _tryIndexInOB <
-                    orderBook[_oppositeOutcome][OrderSide.Buy][oppositePrice]
-                        .length &&
-                        _shares > 0;
-                    _tryIndexInOB++
+            uint oppositePrice = 10 ** decimals - _tryPrice;
+            for (
+                //match with buy orders of opposite outcome
+                uint _tryIndexInOB = 0;
+                _tryIndexInOB <
+                orderBook[_oppositeOutcome][OrderSide.Buy][oppositePrice]
+                    .length &&
+                    _shares > 0;
+                _tryIndexInOB++
+            ) {
+                if (
+                    orderBook[_oppositeOutcome][OrderSide.Buy][oppositePrice][
+                        _tryIndexInOB
+                    ].isActive
                 ) {
-                    if (
-                        orderBook[_oppositeOutcome][OrderSide.Buy][
-                            oppositePrice
-                        ][_tryIndexInOB].isActive
-                    ) {
-                        Order storage _tryOrder = orderBook[_oppositeOutcome][
-                            OrderSide.Buy
-                        ][oppositePrice][_tryIndexInOB];
+                    Order storage _tryOrder = orderBook[_oppositeOutcome][
+                        OrderSide.Buy
+                    ][oppositePrice][_tryIndexInOB];
 
-                        uint _matchedShares = _shares <
-                            _tryOrder.remainingShares
-                            ? _shares
-                            : _tryOrder.remainingShares;
+                    uint _matchedShares = _shares < _tryOrder.remainingShares
+                        ? _shares
+                        : _tryOrder.remainingShares;
 
-                        _executeGeneratingMarketOrder(
-                            _tryOrder,
-                            user,
-                            _outcome,
-                            _oppositeOutcome,
-                            _matchedShares,
-                            _tryPrice,
-                            oppositePrice
-                        );
+                    _executeGeneratingMarketOrder(
+                        _tryOrder,
+                        user,
+                        _outcome,
+                        _oppositeOutcome,
+                        _matchedShares,
+                        _tryPrice,
+                        oppositePrice
+                    );
 
-                        filledShares += _matchedShares;
-                        _shares -= _matchedShares;
+                    filledShares += _matchedShares;
+                    _shares -= _matchedShares;
 
-                        totalCost += _matchedShares * _tryPrice;
-                    }
+                    totalCost += _matchedShares * _tryPrice;
                 }
             }
         }
@@ -138,7 +134,7 @@ contract MarketOrders is LimitOrders {
         BetOutcome _outcome,
         uint _shares
     ) external onlyOwner {
-        require(isResolved == false, "Market is resolved");
+        // require(isResolved == false, "Market is resolved");
         require(
             freeShares[_outcome][user] >= _shares,
             "Insufficient free shares"
@@ -267,7 +263,6 @@ contract MarketOrders is LimitOrders {
         _checkAndUpdateOrderStatus(_order);
     }
 
-    //TODO: keep track of active orders count
     function getActiveOrders(
         BetOutcome _outcome,
         OrderSide _side,

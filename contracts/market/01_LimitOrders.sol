@@ -130,7 +130,11 @@ contract LimitOrders is Ownable {
         uint _price,
         uint _shares
     ) external onlyOwner {
-        require(isResolved == false, "Market is resolved");
+        //allow users to sell their winning shares
+        require(
+            isResolved == false || (_price == 10 ** decimals),
+            "Market is resolved"
+        );
         require(
             freeShares[_outcome][user] >= _shares,
             "Insufficient free shares"
@@ -374,7 +378,6 @@ contract LimitOrders is Ownable {
         }
     }
 
-    // TODO write js to test this
     function cancelOrder(
         BetOutcome _outcome,
         OrderSide _side,
