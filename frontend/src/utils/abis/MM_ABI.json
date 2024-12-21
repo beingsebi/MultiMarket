@@ -520,30 +520,6 @@
         "internalType": "uint256",
         "name": "_eventIndex",
         "type": "uint256"
-      }
-    ],
-    "name": "getAllMarkets",
-    "outputs": [
-      {
-        "internalType": "string[]",
-        "name": "",
-        "type": "string[]"
-      },
-      {
-        "internalType": "string[]",
-        "name": "",
-        "type": "string[]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_eventIndex",
-        "type": "uint256"
       },
       {
         "internalType": "uint256",
@@ -601,6 +577,11 @@
         "internalType": "string[]",
         "name": "",
         "type": "string[]"
+      },
+      {
+        "internalType": "bool[]",
+        "name": "",
+        "type": "bool[]"
       }
     ],
     "stateMutability": "view",
@@ -630,6 +611,11 @@
         "internalType": "string",
         "name": "",
         "type": "string"
+      },
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",

@@ -65,17 +65,34 @@ contract Event is Ownable {
     function getEvent()
         external
         view
-        returns (string memory, string memory, string[] memory, string[] memory)
+        returns (
+            string memory,
+            string memory,
+            string[] memory,
+            string[] memory,
+            bool[] memory
+        )
     {
         string[] memory _marketsTitles = new string[](markets.length);
         string[] memory _marketsDescriptions = new string[](markets.length);
+        bool[] memory _marketsResolved = new bool[](markets.length);
 
         for (uint i = 0; i < markets.length; i++) {
             IMarket _market = IMarket(markets[i]);
-            (_marketsTitles[i], _marketsDescriptions[i]) = _market.getMarket();
+            (
+                _marketsTitles[i],
+                _marketsDescriptions[i],
+                _marketsResolved[i]
+            ) = _market.getMarket();
         }
 
-        return (title, description, _marketsTitles, _marketsDescriptions);
+        return (
+            title,
+            description,
+            _marketsTitles,
+            _marketsDescriptions,
+            _marketsResolved
+        );
     }
 
     /**
@@ -85,7 +102,7 @@ contract Event is Ownable {
      */
     function getMarket(
         uint _index
-    ) external view returns (string memory, string memory) {
+    ) external view returns (string memory, string memory, bool) {
         IMarket _market = IMarket(markets[_index]);
         return _market.getMarket();
     }
@@ -163,22 +180,6 @@ contract Event is Ownable {
         IMarket _market = IMarket(markets[_marketIndex]);
 
         _market.placeLimitSellOrder(user, _betOutcome, _price, _shares);
-    }
-
-    function getAllMarkets()
-        external
-        view
-        returns (string[] memory, string[] memory)
-    {
-        string[] memory _marketsTitles = new string[](markets.length);
-        string[] memory _marketsDescriptions = new string[](markets.length);
-
-        for (uint i = 0; i < markets.length; i++) {
-            (_marketsTitles[i], _marketsDescriptions[i]) = IMarket(markets[i])
-                .getMarket();
-        }
-
-        return (_marketsTitles, _marketsDescriptions);
     }
 
     function placeMarketBuyOrderByShares(

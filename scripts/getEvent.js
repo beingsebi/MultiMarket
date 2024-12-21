@@ -15,14 +15,14 @@ const provider = new ethers.providers.JsonRpcProvider(process.env.API_URL);
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 // Create contract instance
-const eventFactoryContract = new ethers.Contract(contractAddress, contractABI, wallet);
+const contract = new ethers.Contract(contractAddress, contractABI, wallet);
 
 async function getEventDetails(eventIndex) {
   try {
     console.log(`Fetching details for event index ${eventIndex}...`);
-    const eventDetails = await eventFactoryContract.getEvent(eventIndex);
+    const eventDetails = await contract.getEvent(eventIndex);
 
-    const [eventTitle, eventDescription, marketTitles, marketDescriptions] = eventDetails;
+    const [eventTitle, eventDescription, marketTitles, marketDescriptions, marketResolved] = eventDetails;
 
     console.log("Event Details:");
     console.log(`Title: ${eventTitle}`);
@@ -32,6 +32,7 @@ async function getEventDetails(eventIndex) {
       console.log(`  Market ${index + 1}:`);
       console.log(`    Title: ${title}`);
       console.log(`    Description: ${marketDescriptions[index]}`);
+      console.log(`    Resolved: ${marketResolved[index]}`);
     });
   } catch (error) {
     console.error("Error fetching event details:", error);

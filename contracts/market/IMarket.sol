@@ -9,7 +9,10 @@ interface IMarket {
      * @notice Returns the market's title and description.
      * @return The market's title and description.
      */
-    function getMarket() external view returns (string memory, string memory);
+    function getMarket()
+        external
+        view
+        returns (string memory, string memory, bool);
 
     function placeLimitBuyOrder(
         address _user,

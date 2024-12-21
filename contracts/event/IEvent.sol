@@ -14,8 +14,9 @@ interface IEvent {
      * @notice Retrieves details of a specific event and its markets.
      * @return title The event title.
      * @return description The event description.
-     * @return marketTitles An array of market titles.
-     * @return marketDescriptions An array of market descriptions.
+     * @return marketsTitles An array of market titles.
+     * @return marketsDescriptions An array of market descriptions.
+     * @return marketsResolved An array of booleans indicating whether each market has been resolved.
      */
     function getEvent()
         external
@@ -23,8 +24,9 @@ interface IEvent {
         returns (
             string memory title,
             string memory description,
-            string[] memory marketTitles,
-            string[] memory marketDescriptions
+            string[] memory marketsTitles,
+            string[] memory marketsDescriptions,
+            bool[] memory marketsResolved
         );
 
     function title() external view returns (string memory);
@@ -38,7 +40,7 @@ interface IEvent {
      */
     function getMarket(
         uint _index
-    ) external view returns (string memory, string memory);
+    ) external view returns (string memory, string memory, bool);
 
     /**
      * @notice Retrieves the number of markets in the event.
@@ -68,11 +70,6 @@ interface IEvent {
         external
         view
         returns (uint[] memory, uint[] memory, uint[] memory, uint[] memory);
-
-    function getAllMarkets()
-        external
-        view
-        returns (string[] memory, string[] memory);
 
     function placeMarketBuyOrderByShares(
         address user,

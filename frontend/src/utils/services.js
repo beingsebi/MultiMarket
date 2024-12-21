@@ -181,7 +181,7 @@ export const getEvent = async (eventIndex) => {
     const eventDetails = await MMContract.getEvent(eventIndexBigNumber);
     console.log("Event Details:", eventDetails);
 
-    const [eventTitle, eventDescription, marketTitles, marketDescriptions] = eventDetails;
+    const [eventTitle, eventDescription, marketTitles, marketDescriptions, marketResolved] = eventDetails;
 
     console.log("Event Details:");
     console.log(`Title: ${eventTitle}`);
@@ -191,13 +191,15 @@ export const getEvent = async (eventIndex) => {
       console.log(`  Market ${index + 1}:`);
       console.log(`    Title: ${title}`);
       console.log(`    Description: ${marketDescriptions[index]}`);
+      console.log(`    Resolved: ${marketResolved[index]}`);
     });
 
     return {
       eventTitle,
       eventDescription,
       marketTitles,
-      marketDescriptions
+      marketDescriptions,
+      marketResolved
     };
   } catch (error) {
     console.error("Error fetching event details:", error);

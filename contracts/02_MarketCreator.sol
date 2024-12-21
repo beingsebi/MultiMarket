@@ -169,7 +169,13 @@ contract MarketCreator is TokenHolder {
     )
         external
         view
-        returns (string memory, string memory, string[] memory, string[] memory)
+        returns (
+            string memory,
+            string memory,
+            string[] memory,
+            string[] memory,
+            bool[] memory
+        )
     {
         require(_eventIndex < events.length, "Invalid event index");
         IEvent _event = IEvent(events[_eventIndex]);
@@ -179,7 +185,7 @@ contract MarketCreator is TokenHolder {
     function getMarket(
         uint _eventIndex,
         uint _marketIndex
-    ) external view returns (string memory, string memory) {
+    ) external view returns (string memory, string memory, bool) {
         require(_eventIndex < events.length, "Invalid event index");
         IEvent _event = IEvent(events[_eventIndex]);
         return _event.getMarket(_marketIndex);
@@ -200,13 +206,6 @@ contract MarketCreator is TokenHolder {
         }
 
         return (_titles, _descriptions);
-    }
-
-    function getAllMarkets(
-        uint _eventIndex
-    ) external view returns (string[] memory, string[] memory) {
-        require(_eventIndex < events.length, "Invalid event index");
-        return IEvent(events[_eventIndex]).getAllMarkets();
     }
 
     function resolveMarket(

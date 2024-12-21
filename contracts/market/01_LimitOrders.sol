@@ -72,8 +72,12 @@ contract LimitOrders is Ownable {
      * @notice Returns the market's title and description.
      * @return The market's title and description.
      */
-    function getMarket() external view returns (string memory, string memory) {
-        return (title, description);
+    function getMarket()
+        external
+        view
+        returns (string memory, string memory, bool)
+    {
+        return (title, description, isResolved);
     }
 
     /**
