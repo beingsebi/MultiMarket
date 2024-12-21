@@ -56,4 +56,8 @@ interface IMarket {
         uint _orderIndex,
         address _user
     ) external;
+
+    function getCurrentPrice(
+        BetOutcome _outcome
+    ) external view returns (uint, uint);
 }

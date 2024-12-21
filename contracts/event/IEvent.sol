@@ -108,4 +108,9 @@ interface IEvent {
         uint _orderIndex,
         address _user
     ) external;
+
+    function getCurrentPrice(
+        uint _marketIndex,
+        BetOutcome _betOutcome
+    ) external view returns (uint, uint);
 }

@@ -1,5 +1,5 @@
 async function main() {
-  const MultiMarket = await ethers.getContractFactory("OrderPlacer");
+  const MultiMarket = await ethers.getContractFactory("PriceHelper");
 
   const usdcAddress = process.env.USDC_ADDRESS;
   const eventFactoryAddress = process.env.EVENT_FACTORY_ADDRESS;

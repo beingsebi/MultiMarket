@@ -232,4 +232,13 @@ contract Event is Ownable {
         IMarket _market = IMarket(markets[_marketIndex]);
         _market.cancelOrder(_outcome, _side, _price, _orderIndex, _user);
     }
+
+    function getCurrentPrice(
+        uint _marketIndex,
+        BetOutcome _betOutcome
+    ) external view returns (uint, uint) {
+        require(_marketIndex < markets.length, "Invalid market index");
+        IMarket _market = IMarket(markets[_marketIndex]);
+        return _market.getCurrentPrice(_betOutcome);
+    }
 }

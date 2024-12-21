@@ -71,4 +71,62 @@ contract Market is MarketOrders {
             }
         }
     }
+
+    function getCurrentPrice(
+        BetOutcome _outcome
+    ) external view returns (uint, uint) {
+        require(
+            _outcome == BetOutcome.Yes || _outcome == BetOutcome.No,
+            "Invalid bet outcome"
+        );
+        return (_getCurrentBuyPrice(_outcome), _getCurrentSellPrice(_outcome));
+    }
+
+    function _getCurrentBuyPrice(
+        BetOutcome _outcome
+    ) internal view returns (uint) {
+        uint step = 10 ** (decimals - granularity);
+        uint _price = 10 ** decimals;
+
+        while (_price >= step) {
+            for (
+                uint _index = 0;
+                _index < orderBook[_outcome][OrderSide.Buy][_price].length;
+                _index++
+            ) {
+                if (
+                    orderBook[_outcome][OrderSide.Buy][_price][_index].isActive
+                ) {
+                    return _price;
+                }
+            }
+            _price -= step;
+        }
+
+        return 0;
+    }
+
+    function _getCurrentSellPrice(
+        BetOutcome _outcome
+    ) internal view returns (uint) {
+        uint step = 10 ** (decimals - granularity);
+        uint _price = 0;
+
+        while (_price <= 10 ** decimals) {
+            for (
+                uint _index = 0;
+                _index < orderBook[_outcome][OrderSide.Sell][_price].length;
+                _index++
+            ) {
+                if (
+                    orderBook[_outcome][OrderSide.Sell][_price][_index].isActive
+                ) {
+                    return _price;
+                }
+            }
+            _price += step;
+        }
+
+        return 10 ** decimals;
+    }
 }

@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 
-const contractABIPath = "./artifacts/contracts/03_OrderPlacer.sol/OrderPlacer.json";
+const contractABIPath = "./artifacts/contracts/04_PriceHelper.sol/PriceHelper.json";
 const contractOutputFilePath = path.resolve(__dirname, '../frontend/src/utils/abis/MM_ABI.json');
 
 const usdcContractABIPath = "./artifacts/contracts/external/USDC.sol/USDC.json";
