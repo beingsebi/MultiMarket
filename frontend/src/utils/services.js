@@ -292,3 +292,32 @@ export const getPositions = async (eventIndex, userAddress) => {
     return [];
   }
 };
+
+export const getActiveOrders = async (eventIndex, marketIndex, betOutcome, orderSide, userAddress) => {
+  try {
+    const { MMContract } = await initializeContracts();
+    if (!MMContract) return null;
+
+    console.log("Fetching active orders...");
+    console.log(eventIndex, marketIndex, betOutcome, orderSide, userAddress);
+    const activeOrders = await MMContract.getActiveOrders(
+      eventIndex,
+      marketIndex,
+      betOutcome,
+      orderSide,
+      userAddress
+    );
+
+    return activeOrders.map(order => ({
+      user: order.user,
+      initialShares: order.initialShares.toString(),
+      remainingShares: order.remainingShares.toString(),
+      timestamp: new Date(order.timestamp * 1000).toLocaleString(),
+      isActive: order.isActive,
+      currentTotalPrice: ethers.utils.formatUnits(order.currentTotalPrice, 6)
+    }));
+  } catch (error) {
+    console.error("Error fetching active orders:", error);
+    return [];
+  }
+};

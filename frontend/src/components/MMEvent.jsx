@@ -4,6 +4,7 @@ import { requestAccount, getEvent, getPositions } from '../utils/services';
 import PlaceOrderForm from './PlaceOrderForm';
 import PlaceSellOrderForm from './PlaceSellOrderForm';
 import PlaceMarketOrderForm from './PlaceMarketOrderForm';
+import ActiveOrders from './ActiveOrders';
 import EventEmitter from "../utils/EventEmitter";
 
 const MMEvent = () => {
@@ -41,7 +42,7 @@ const MMEvent = () => {
     }, [eventIndex, fetchEvent, fetchPositions]);
 
     if (!event) {
-        return <p>Couldn't retrieve the event. Please make sure to connect your wallet to view the event."</p>
+        return <p>Couldn't retrieve the event. Please make sure to connect your wallet to view the event.</p>
     }
 
     return (
@@ -59,6 +60,8 @@ const MMEvent = () => {
                         <PlaceSellOrderForm eventIndex={eventIndex} marketIndex={index} />
                         <br />
                         <PlaceMarketOrderForm eventIndex={eventIndex} marketIndex={index} />
+                        <br />
+                        <ActiveOrders eventIndex={eventIndex} marketIndex={index} />
                         <div>
                             {positions.length > 0 ? (
                                 <>
