@@ -19,9 +19,13 @@ npx hardhat run deployments/deploy_MarketFactory.js --network localhost
 # Deploy the main contract to the localhost network
 npx hardhat run deployments/deploy.js --network localhost
 
+# Transfer ownership of the EventFactory contracts to the main contract
+npx hardhat run scripts/transferEventFactoryOwnership.js --network localhost
+# important to have this after deployment
+
 # Deposit USDC to the main contract
 PRIVATE_KEY=df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e npx hardhat run scripts/deposit.js --network localhost
-
+# Deposit 2
 PRIVATE_KEY=de9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b4ee0 npx hardhat run scripts/deposit.js --network localhost
 
 # Get the balance of user 1
@@ -58,6 +62,12 @@ npx hardhat run scripts/getAllEvents.js --network localhost
 # Get the market
 npx hardhat run scripts/getMarket.js --network localhost
 
+echo "!!!"
+echo "finished creating event and markets"
+echo "!!!"
+echo " "
+
+
 PRIVATE_KEY=df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e OUTCOME=0 PRICE=400000 SHARES=10 npx hardhat run scripts/placeLimitBuyOrder.js --network localhost
 
 PRIVATE_KEY=de9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b4ee0 OUTCOME=1 PRICE=600000 SHARES=10 npx hardhat run scripts/placeLimitBuyOrder.js --network localhost
@@ -81,11 +91,10 @@ echo "here"
 echo " "
 
 PUBLIC_ADDRESS=0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199 OUTCOME=0 SIDE=1 npx hardhat run scripts/getActiveOrders.js --network localhost
-exit 0
-PRIVATE_KEY=df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e OUTCOME=0 PRICE=400000 SIDE=1 npx hardhat run scripts/cancelOrder.js --network localhost
+
+PRIVATE_KEY=df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf23656e OUTCOME=0 PRICE=400000 ORDER_INDEX=0 SIDE=1 npx hardhat run scripts/cancelOrder.js --network localhost
 
 PUBLIC_ADDRESS=0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199 OUTCOME=0 SIDE=1 npx hardhat run scripts/getActiveOrders.js --network localhost
-exit 0
 
 PRIVATE_KEY=de9be858da4a475276426320d5e9262ecfc3ba460bfac56360bfa6c4c28b4ee0 OUTCOME=0 SIDE=0 SHARES=2 npx hardhat run scripts/placeMarketOrder.js --network localhost
 
