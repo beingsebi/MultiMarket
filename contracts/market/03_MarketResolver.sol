@@ -39,7 +39,9 @@ contract Market is MarketOrders {
             remainingShares: issuedShares,
             timestamp: block.timestamp,
             isActive: true,
-            currentTotalPrice: 0
+            currentTotalPrice: 0,
+            index: orderBook[_winningOutcome][OrderSide.Buy][10 ** decimals]
+                .length
         });
 
         orderBook[_winningOutcome][OrderSide.Buy][10 ** decimals].push(order);
@@ -62,7 +64,8 @@ contract Market is MarketOrders {
                         _winningOutcome,
                         OrderSide.Sell,
                         _price,
-                        _index
+                        _index,
+                        address(0)
                     );
                 }
             }

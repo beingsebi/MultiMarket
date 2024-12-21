@@ -47,8 +47,12 @@ const user = process.env.PUBLIC_ADDRESS;
 
 getActiveOrders(eventIndex, marketIndex, betOutcome, orderSide, user)
   .then((orders) => {
+    if (orders.length === 0) {
+      console.log("No active orders found.");
+      return;}
      orders.forEach((order, index) => {
     console.log(`Order ${index + 1}:`);
+    console.log(`  Index: ${order.index}`);
     console.log(`  User: ${order.user}`);
     console.log(`  Initial Shares: ${order.initialShares}`);
     console.log(`  Remaining Shares: ${order.remainingShares}`);

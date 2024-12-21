@@ -23,6 +23,7 @@ struct Order {
     uint remainingShares;
     uint timestamp;
     bool isActive;
-    uint currentTotalPrice;
     // how much money the user received/spent till now
+    uint currentTotalPrice;
+    uint index;
 }

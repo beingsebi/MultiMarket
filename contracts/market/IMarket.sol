@@ -48,4 +48,12 @@ interface IMarket {
         OrderSide _side,
         address _user
     ) external view returns (Order[] memory);
+
+    function cancelOrder(
+        BetOutcome _outcome,
+        OrderSide _side,
+        uint _price,
+        uint _orderIndex,
+        address _user
+    ) external;
 }

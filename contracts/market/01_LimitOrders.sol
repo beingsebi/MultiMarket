@@ -39,9 +39,10 @@ contract LimitOrders is Ownable {
         uint unfilledShares
     );
 
-    modifier OnlyOwnerOrSelf() {
+    modifier OnlyOwnerAndUserOrSelf(address _sender, address _orderOwner) {
         require(
-            msg.sender == owner() || msg.sender == address(this),
+            (msg.sender == owner() && _sender == _orderOwner) ||
+                msg.sender == address(this),
             "Only owner or self can call this function"
         );
         _;
@@ -101,13 +102,16 @@ contract LimitOrders is Ownable {
         uint _price,
         uint _shares
     ) external onlyOwner {
+        require(isResolved == false, "Market is resolved");
+
         Order memory order = Order({
             user: user,
             initialShares: _shares,
             remainingShares: _shares,
             timestamp: block.timestamp,
             isActive: true,
-            currentTotalPrice: 0
+            currentTotalPrice: 0,
+            index: orderBook[_outcome][OrderSide.Buy][_price].length
         });
 
         orderBook[_outcome][OrderSide.Buy][_price].push(order);
@@ -126,6 +130,7 @@ contract LimitOrders is Ownable {
         uint _price,
         uint _shares
     ) external onlyOwner {
+        require(isResolved == false, "Market is resolved");
         require(
             freeShares[_outcome][user] >= _shares,
             "Insufficient free shares"
@@ -137,7 +142,8 @@ contract LimitOrders is Ownable {
             remainingShares: _shares,
             timestamp: block.timestamp,
             isActive: true,
-            currentTotalPrice: 0
+            currentTotalPrice: 0,
+            index: orderBook[_outcome][OrderSide.Sell][_price].length
         });
 
         freeShares[_outcome][user] -= _shares;
@@ -373,8 +379,15 @@ contract LimitOrders is Ownable {
         BetOutcome _outcome,
         OrderSide _side,
         uint _price,
-        uint _orderIndex
-    ) public OnlyOwnerOrSelf {
+        uint _orderIndex,
+        address _user
+    )
+        public
+        OnlyOwnerAndUserOrSelf(
+            _user,
+            orderBook[_outcome][_side][_price][_orderIndex].user
+        )
+    {
         Order storage _order = orderBook[_outcome][_side][_price][_orderIndex];
         if (!_order.isActive) {
             return;

@@ -38,6 +38,8 @@ contract MarketOrders is LimitOrders {
         BetOutcome _outcome,
         uint _shares
     ) external onlyOwner returns (uint, uint, uint) {
+        require(isResolved == false, "Market is resolved");
+
         uint filledShares = 0;
         uint totalCost = 0;
         BetOutcome _oppositeOutcome = oppositeBetOutcome[_outcome];
@@ -136,6 +138,7 @@ contract MarketOrders is LimitOrders {
         BetOutcome _outcome,
         uint _shares
     ) external onlyOwner {
+        require(isResolved == false, "Market is resolved");
         require(
             freeShares[_outcome][user] >= _shares,
             "Insufficient free shares"

@@ -219,4 +219,17 @@ contract Event is Ownable {
         IMarket _market = IMarket(markets[_marketIndex]);
         return _market.getActiveOrders(_betOutcome, _orderSide, _user);
     }
+
+    function cancelOrder(
+        uint _marketIndex,
+        BetOutcome _outcome,
+        OrderSide _side,
+        uint _price,
+        uint _orderIndex,
+        address _user
+    ) external onlyOwner {
+        require(_marketIndex < markets.length, "Invalid market index");
+        IMarket _market = IMarket(markets[_marketIndex]);
+        _market.cancelOrder(_outcome, _side, _price, _orderIndex, _user);
+    }
 }
