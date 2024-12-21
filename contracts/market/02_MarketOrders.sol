@@ -207,6 +207,14 @@ contract MarketOrders is LimitOrders {
                 _order.user,
                 _matchedShares * _price
             );
+
+            emit DirectTrade(
+                _user,
+                _order.user,
+                _outcome,
+                _price,
+                _matchedShares
+            );
         } else {
             freeShares[_outcome][_user] -= _matchedShares;
             freeShares[_outcome][_order.user] += _matchedShares;
@@ -216,10 +224,19 @@ contract MarketOrders is LimitOrders {
                 _user,
                 _matchedShares * _price
             );
+
+            emit DirectTrade(
+                _order.user,
+                _user,
+                _outcome,
+                _price,
+                _matchedShares
+            );
         }
 
         _order.remainingShares -= _matchedShares;
         _order.currentTotalPrice += _matchedShares * _price;
+
         _checkAndUpdateOrderStatus(_order);
     }
 
@@ -260,6 +277,15 @@ contract MarketOrders is LimitOrders {
 
         _order.remainingShares -= _matchedShares;
         _order.currentTotalPrice += _matchedShares * _priceOrder;
+
+        emit GeneratingTrade(
+            _user,
+            _outcomeUser,
+            _priceUser,
+            _order.user,
+            _matchedShares
+        );
+
         _checkAndUpdateOrderStatus(_order);
     }
 

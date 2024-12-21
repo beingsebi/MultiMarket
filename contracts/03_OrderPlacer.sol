@@ -5,6 +5,16 @@ pragma solidity >=0.8.28 <0.9.0;
 import "./02_MarketCreator.sol";
 
 contract OrderPlacer is MarketCreator {
+    event OrderPlaced(
+        address indexed user,
+        uint indexed eventIndex,
+        uint indexed marketIndex,
+        BetOutcome betOutcome,
+        OrderSide orderSide,
+        uint price,
+        uint shares
+    );
+
     constructor(
         address _currencyToken,
         address _eventFactoryAddress,
@@ -99,6 +109,16 @@ contract OrderPlacer is MarketCreator {
                 _shares
             );
         }
+
+        emit OrderPlaced(
+            msg.sender,
+            _eventIndex,
+            _marketIndex,
+            _betOutcome,
+            _orderSide,
+            _price,
+            _shares
+        );
     }
 
     function placeMarketOrderByShares(

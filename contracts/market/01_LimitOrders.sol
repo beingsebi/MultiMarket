@@ -4,6 +4,7 @@ pragma solidity >=0.8.28 <0.9.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../utils/OrderDefinitions.sol";
+import "../utils/Events.sol";
 import "./ITokenHolder.sol";
 import "hardhat/console.sol";
 
@@ -332,7 +333,14 @@ contract LimitOrders is Ownable {
 
         _buyOrder.currentTotalPrice += _matchedShares * _price;
         _sellOrder.currentTotalPrice += _matchedShares * _price;
-        // TODO: emit event
+
+        emit DirectTrade(
+            _buyOrder.user,
+            _sellOrder.user,
+            _outcome,
+            _price,
+            _matchedShares
+        );
     }
 
     function _executeGeneratingTrade(
@@ -373,6 +381,14 @@ contract LimitOrders is Ownable {
 
         _buyOrder1.currentTotalPrice += _matchedShares * _price1;
         _buyOrder2.currentTotalPrice += _matchedShares * _price2;
+
+        emit GeneratingTrade(
+            _buyOrder1.user,
+            _betOutcome1,
+            _price1,
+            _buyOrder2.user,
+            _matchedShares
+        );
     }
 
     function _checkAndUpdateOrderStatus(Order storage _order) internal {
