@@ -155,6 +155,55 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "eventIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "marketIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum BetOutcome",
+        "name": "betOutcome",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "enum OrderSide",
+        "name": "orderSide",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "price",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"
+      }
+    ],
+    "name": "OrderPlaced",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "previousOwner",
         "type": "address"
       },
