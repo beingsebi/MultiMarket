@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllEvents } from '../utils/services';
-
+import CreateEvent from './CreateEvent';
 
 const MMEvents = () => {
     const [events, setEvents] = useState([]);
+    const [showCreateEvent, setShowCreateEvent] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -21,9 +22,17 @@ const MMEvents = () => {
         navigate(`/event/${index}`);
     };
 
+    const toggleCreateEvent = () => {
+        setShowCreateEvent(!showCreateEvent);
+    };
+
     return (
         <div>
             <h1>Events List</h1>
+            <button onClick={toggleCreateEvent}>
+                {showCreateEvent ? 'Hide Create Event' : 'Create New Event'}
+            </button>
+            {showCreateEvent && <CreateEvent />}
             <ul>
                 {events.map((event, index) => (
                     <li key={index} onClick={() => handleEventClick(index)}>

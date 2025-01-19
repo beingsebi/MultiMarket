@@ -76,7 +76,7 @@ export const requestAccount = async () => {
     return accounts[0]; // Return the first account
   } catch (error) {
     console.error("Error requesting account:", error.message);
-    toast.error("Error requesting account. Please make sure to connect your wallet.");
+    // toast.error("Error requesting account. Please make sure to connect your wallet.");
     return null;
   }
 };
@@ -126,6 +126,7 @@ export const depositUSDC = async (amount) => {
     const depositTx = await MMContract.deposit(parsedAmount);
     await depositTx.wait();
     console.log("Deposit successful!");
+      toast.success("Deposit successful!");
   } catch (error) {
     console.error("Error during deposit:", error);
     toast.error(`Error during deposit: ${error.reason}`);
@@ -147,6 +148,7 @@ export const withdrawUSDC = async (amount) => {
     const withdrawTx = await MMContract.withdraw(parsedAmount);
     await withdrawTx.wait();
     console.log("Withdrawal successful!");
+    toast.success("Withdrawal successful!");
   } catch (error) {
     console.error("Error during withdrawal:", error);
     toast.error(`Error during withdrawal: ${error.reason}`);
@@ -233,7 +235,7 @@ const placeLimitOrder = async (eventIndex, marketIndex, betOutcome, price, share
     const receipt = await tx.wait();
 
     console.log(`Limit ${orderType === BUY_ORDER ? 'buy' : 'sell'} order placed successfully!`);
-    console.log(`Transaction Hash: ${receipt.transactionHash}`);
+    toast.success(`Limit ${orderType === BUY_ORDER ? 'buy' : 'sell'} order placed successfully!`);
   } catch (error) {
     console.error(`Error placing limit ${orderType === BUY_ORDER ? 'buy' : 'sell'} order:`, error);
     toast.error(`Error placing limit ${orderType === BUY_ORDER ? 'buy' : 'sell'} order: ${error.reason}`);
@@ -268,7 +270,7 @@ export const placeMarketOrder = async (eventIndex, marketIndex, betOutcome, orde
     const receipt = await tx.wait();
 
     console.log("Market order placed successfully!");
-    console.log(`Transaction Hash: ${receipt.transactionHash}`);
+    toast.success("Market order placed successfully!");
   } catch (error) {
     console.error("Error placing market order:", error);
     toast.error(`Error placing market order: ${error.reason}`);
@@ -355,5 +357,29 @@ export const getCurrentPrice = async (eventIndex, marketIndex, betOutcome) => {
     console.error("Error fetching current price:", error);
     toast.error(`Error fetching current price: ${error.reason}`);
     return null;
+  }
+};
+
+export const createEvent = async (eventTitle, eventDescription) => {
+  try {
+    const { MMContract } = await initializeContracts();
+    if (!MMContract) return;
+
+    console.log("Creating a new event...");
+
+    const tx = await MMContract.createEvent(eventTitle, eventDescription);
+
+    console.log("Transaction sent. Waiting for confirmation...");
+    const receipt = await tx.wait(); // Wait for the transaction to be mined
+    console.log("Event created successfully!");
+
+    // Log the transaction hash and event creation details
+    console.log("Event Details:");
+    console.log(`  Title: ${eventTitle}`);
+    console.log(`  Description: ${eventDescription}`);
+    toast.success("Event created successfully!");
+  } catch (error) {
+    console.error("Error creating event:", error);
+    toast.error(`Error creating event: ${error.reason}`);
   }
 };
