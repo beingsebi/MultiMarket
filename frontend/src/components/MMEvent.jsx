@@ -37,17 +37,22 @@ const MMEvent = () => {
 
     const handleResolveMarket = async (marketIndex) => {
         const winningOutcome = prompt("Enter the winning outcome (Yes or No):");
-        const outcomeValue = winningOutcome.toLowerCase() === "yes" ? 0 : winningOutcome.toLowerCase() === "no" ? 1 : null;
         
-        if (outcomeValue !== null) {
-            try {
-                await resolveMarket(eventIndex, marketIndex, outcomeValue);
-                fetchEvent();
-            } catch (error) {
-                console.error("Error resolving market:", error);
+        if (winningOutcome !== null) {
+            const outcomeValue = winningOutcome.toLowerCase() === "yes" ? 0 : winningOutcome.toLowerCase() === "no" ? 1 : null;
+            
+            if (outcomeValue !== null) {
+                try {
+                    await resolveMarket(eventIndex, marketIndex, outcomeValue);
+                    fetchEvent();
+                } catch (error) {
+                    console.error("Error resolving market:", error);
+                }
+            } else {
+                alert("Invalid input. Please enter 'Yes' or 'No'.");
             }
         } else {
-            alert("Invalid input. Please enter 'Yes' or 'No'.");
+            alert("Input cannot be null. Please enter 'Yes' or 'No'.");
         }
     };
 
