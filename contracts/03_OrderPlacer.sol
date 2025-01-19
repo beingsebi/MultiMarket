@@ -127,7 +127,7 @@ contract OrderPlacer is MarketCreator {
         BetOutcome _betOutcome,
         OrderSide _orderSide,
         uint _shares
-    ) external {
+    ) external returns (uint, uint, uint) {
         require(
             _betOutcome == BetOutcome.Yes || _betOutcome == BetOutcome.No,
             "Invalid bet outcome"
@@ -144,19 +144,21 @@ contract OrderPlacer is MarketCreator {
         require(_marketIndex < _event.getMarketCount(), "Invalid market index");
 
         if (_orderSide == OrderSide.Buy) {
-            _event.placeMarketBuyOrderByShares(
-                msg.sender,
-                _marketIndex,
-                _betOutcome,
-                _shares
-            );
+            return
+                _event.placeMarketBuyOrderByShares(
+                    msg.sender,
+                    _marketIndex,
+                    _betOutcome,
+                    _shares
+                );
         } else {
-            _event.placeMarketSellOrderByShares(
-                msg.sender,
-                _marketIndex,
-                _betOutcome,
-                _shares
-            );
+            return
+                _event.placeMarketSellOrderByShares(
+                    msg.sender,
+                    _marketIndex,
+                    _betOutcome,
+                    _shares
+                );
         }
     }
 

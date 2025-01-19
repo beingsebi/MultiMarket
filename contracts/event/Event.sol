@@ -187,9 +187,9 @@ contract Event is Ownable {
         uint _marketIndex,
         BetOutcome _betOutcome,
         uint _shares
-    ) external onlyOwner {
+    ) external onlyOwner returns (uint, uint, uint) {
         IMarket _market = IMarket(markets[_marketIndex]);
-        _market.placeMarketBuyOrderByShares(user, _betOutcome, _shares);
+        return _market.placeMarketBuyOrderByShares(user, _betOutcome, _shares);
     }
 
     function placeMarketSellOrderByShares(
@@ -197,9 +197,9 @@ contract Event is Ownable {
         uint _marketIndex,
         BetOutcome _betOutcome,
         uint _shares
-    ) external onlyOwner {
+    ) external onlyOwner returns (uint, uint, uint) {
         IMarket _market = IMarket(markets[_marketIndex]);
-        _market.placeMarketSellOrderByShares(user, _betOutcome, _shares);
+        return _market.placeMarketSellOrderByShares(user, _betOutcome, _shares);
     }
 
     function resolveMarket(

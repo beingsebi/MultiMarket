@@ -76,14 +76,14 @@ interface IEvent {
         uint _marketIndex,
         BetOutcome _betOutcome,
         uint _shares
-    ) external;
+    ) external returns (uint, uint, uint);
 
     function placeMarketSellOrderByShares(
         address user,
         uint _marketIndex,
         BetOutcome _betOutcome,
         uint _shares
-    ) external;
+    ) external returns (uint, uint, uint);
 
     function resolveMarket(
         uint _marketIndex,

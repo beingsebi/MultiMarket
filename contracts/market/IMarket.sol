@@ -36,13 +36,13 @@ interface IMarket {
         address _user,
         BetOutcome _outcome,
         uint _shares
-    ) external;
+    ) external returns (uint, uint, uint);
 
     function placeMarketSellOrderByShares(
         address _user,
         BetOutcome _outcome,
         uint _shares
-    ) external;
+    ) external returns (uint, uint, uint);
 
     function resolveMarket(BetOutcome _winningOutcome) external;
 

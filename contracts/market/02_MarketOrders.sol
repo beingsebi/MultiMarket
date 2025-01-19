@@ -133,7 +133,7 @@ contract MarketOrders is LimitOrders {
         address user,
         BetOutcome _outcome,
         uint _shares
-    ) external onlyOwner {
+    ) external onlyOwner returns (uint, uint, uint) {
         // require(isResolved == false, "Market is resolved");
         require(
             freeShares[_outcome][user] >= _shares,
@@ -183,6 +183,7 @@ contract MarketOrders is LimitOrders {
                 }
             }
         }
+        return (filledShares, totalPrice, _shares);
     }
 
     function _executeDirectMarketOrder(
