@@ -48,7 +48,6 @@ contract Market is MarketOrders {
         orderBook[_winningOutcome][OrderSide.Buy][10 ** decimals].push(order);
         userActiveOrdersCount[address(this)]++;
 
-        // cancel all active orders
         for (
             uint _price = 0;
             _price <= 10 ** decimals;

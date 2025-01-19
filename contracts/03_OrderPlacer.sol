@@ -5,7 +5,7 @@ pragma solidity >=0.8.28 <0.9.0;
 import "./02_MarketCreator.sol";
 
 contract OrderPlacer is MarketCreator {
-    event OrderPlaced(
+    event LimitOrderPlaced(
         address indexed user,
         uint indexed eventIndex,
         uint indexed marketIndex,
@@ -13,6 +13,17 @@ contract OrderPlacer is MarketCreator {
         OrderSide orderSide,
         uint price,
         uint shares
+    );
+
+    event MarketOrderPlaced(
+        address indexed user,
+        uint indexed eventIndex,
+        uint indexed marketIndex,
+        BetOutcome betOutcome,
+        OrderSide orderSide,
+        uint filledShares,
+        uint totalCostOfFilledShares,
+        uint unfilledShares
     );
 
     constructor(
@@ -110,7 +121,7 @@ contract OrderPlacer is MarketCreator {
             );
         }
 
-        emit OrderPlaced(
+        emit LimitOrderPlaced(
             msg.sender,
             _eventIndex,
             _marketIndex,
@@ -143,23 +154,37 @@ contract OrderPlacer is MarketCreator {
 
         require(_marketIndex < _event.getMarketCount(), "Invalid market index");
 
+        uint filled;
+        uint totalCost;
+        uint unfilled;
+
         if (_orderSide == OrderSide.Buy) {
-            return
-                _event.placeMarketBuyOrderByShares(
-                    msg.sender,
-                    _marketIndex,
-                    _betOutcome,
-                    _shares
-                );
+            (filled, totalCost, unfilled) = _event.placeMarketBuyOrderByShares(
+                msg.sender,
+                _marketIndex,
+                _betOutcome,
+                _shares
+            );
         } else {
-            return
-                _event.placeMarketSellOrderByShares(
-                    msg.sender,
-                    _marketIndex,
-                    _betOutcome,
-                    _shares
-                );
+            (filled, totalCost, unfilled) = _event.placeMarketSellOrderByShares(
+                msg.sender,
+                _marketIndex,
+                _betOutcome,
+                _shares
+            );
         }
+        emit MarketOrderPlaced(
+            msg.sender,
+            _eventIndex,
+            _marketIndex,
+            _betOutcome,
+            _orderSide,
+            filled,
+            totalCost,
+            unfilled
+        );
+
+        return (filled, totalCost, unfilled);
     }
 
     function getActiveOrders(
