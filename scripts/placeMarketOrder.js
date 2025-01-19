@@ -8,27 +8,27 @@ const contractABI = JSON.parse(
   fs.readFileSync(process.env.CONTRACT_ABI_PATH)
 ).abi;
 
-// Connect to Ethereum network
+// Connect to the Ethereum network using Alchemy
 const provider = new ethers.providers.JsonRpcProvider(process.env.API_URL);
 
 // Initialize wallet with private key
 const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
 // Create contract instance
-const ordersHelperContract = new ethers.Contract(contractAddress, contractABI, wallet);
+const contract = new ethers.Contract(contractAddress, contractABI, wallet);
 
 async function placeMarketOrderByShares(
   eventIndex,
   marketIndex,
-  betOutcome,  // Use 0 for "Yes", 1 for "No"
-  orderSide,   // Use 0 for "Buy", 1 for "Sell"
+  betOutcome,  // 0 for "Yes", 1 for "No"
+  orderSide,   // 0 for "Buy", 1 for "Sell"
   shares
 ) {
   try {
     console.log("Placing a market order by shares...");
 
-    // Call the placeMarketOrderByShares function
-    const tx = await ordersHelperContract.placeMarketOrderByShares(
+    // Call the contract function (this does not send a transaction, it only simulates the call)
+    const [filled, price, unfilled] = await contract.callStatic.placeMarketOrderByShares(
       eventIndex,
       marketIndex,
       betOutcome,
@@ -36,11 +36,10 @@ async function placeMarketOrderByShares(
       shares
     );
 
-    console.log("Transaction sent. Waiting for confirmation...");
-    const receipt = await tx.wait(); // Wait for the transaction to be mined
-
-    console.log("Market order placed successfully!");
-    console.log(`Transaction Hash: ${receipt.transactionHash}`);
+    console.log(`Filled: ${filled}`);
+    console.log(`Price: ${price}`);
+    console.log(`Unfilled: ${unfilled}`);
+    
   } catch (error) {
     console.error("Error placing market order:", error);
   }
@@ -50,14 +49,12 @@ async function placeMarketOrderByShares(
 // Example: Place a market order by shares
 const betOutcome = process.env.OUTCOME;
 const shares = process.env.SHARES;
-const side= process.env.SIDE;
+const side = process.env.SIDE;
 
 placeMarketOrderByShares(
   0,          // Event index
   0,          // Market index
-  betOutcome,          // Bet outcome: 0 for Yes, 1 for No
-  side,          // Order type: 0 for Buy, 1 for Sell
-  shares         // Shares: Amount of shares to trade
+  betOutcome, // Bet outcome: 0 for Yes, 1 for No
+  side,       // Order type: 0 for Buy, 1 for Sell
+  shares      // Shares: Amount of shares to trade
 );
-
-
