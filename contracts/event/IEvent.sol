@@ -95,7 +95,7 @@ interface IEvent {
         BetOutcome _betOutcome,
         OrderSide _orderSide,
         address _user
-    ) external view returns (Order[] memory);
+    ) external view returns (OrderDto[] memory);
 
     function cancelOrder(
         uint _marketIndex,

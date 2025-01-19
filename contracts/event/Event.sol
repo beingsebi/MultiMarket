@@ -216,7 +216,7 @@ contract Event is Ownable {
         BetOutcome _betOutcome,
         OrderSide _orderSide,
         address _user
-    ) external view returns (Order[] memory) {
+    ) external view returns (OrderDto[] memory) {
         IMarket _market = IMarket(markets[_marketIndex]);
         return _market.getActiveOrders(_betOutcome, _orderSide, _user);
     }

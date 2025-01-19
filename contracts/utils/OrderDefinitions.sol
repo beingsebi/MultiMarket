@@ -27,3 +27,11 @@ struct Order {
     uint currentTotalPrice;
     uint index;
 }
+
+struct OrderDto {
+    uint initialShares;
+    uint remainingShares;
+    uint timestamp;
+    uint totalCostOfFilledShares;
+    uint price;
+}

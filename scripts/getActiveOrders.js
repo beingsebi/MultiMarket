@@ -50,16 +50,14 @@ getActiveOrders(eventIndex, marketIndex, betOutcome, orderSide, user)
     if (orders.length === 0) {
       console.log("No active orders found.");
       return;}
-     orders.forEach((order, index) => {
-    console.log(`Order ${index + 1}:`);
-    console.log(`  Index: ${order.index}`);
-    console.log(`  User: ${order.user}`);
-    console.log(`  Initial Shares: ${order.initialShares}`);
-    console.log(`  Remaining Shares: ${order.remainingShares}`);
-    console.log(`  Timestamp: ${new Date(order.timestamp * 1000).toLocaleString()}`);
-    console.log(`  Is Active: ${order.isActive}`);
-    console.log(`  Current Total Price: ${order.currentTotalPrice}`);
-  });
+    orders.forEach((order, index) => {
+      console.log(`Order ${index + 1}:`);
+      console.log(`  Initial Shares: ${order.initialShares}`);
+      console.log(`  Remaining Shares: ${order.remainingShares}`);
+      console.log(`  Timestamp: ${new Date(order.timestamp * 1000).toLocaleString()}`);
+      console.log(`  Total Cost Of Filled Shares: ${order.totalCostOfFilledShares}`);
+      console.log(`  Price: ${order.price}`);
+    });
   })
   .catch((error) => {
     console.error("Error:", error);

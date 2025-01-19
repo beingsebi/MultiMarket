@@ -294,7 +294,7 @@ contract MarketOrders is LimitOrders {
         BetOutcome _outcome,
         OrderSide _side,
         address _user
-    ) external view returns (Order[] memory) {
+    ) external view returns (OrderDto[] memory) {
         uint activeOrderCount = 0;
 
         for (
@@ -316,7 +316,7 @@ contract MarketOrders is LimitOrders {
             }
         }
 
-        Order[] memory _orders = new Order[](activeOrderCount);
+        OrderDto[] memory _orders = new OrderDto[](activeOrderCount);
         uint counter = 0;
 
         for (
@@ -333,9 +333,16 @@ contract MarketOrders is LimitOrders {
                     orderBook[_outcome][_side][_price][_index].isActive &&
                     orderBook[_outcome][_side][_price][_index].user == _user
                 ) {
-                    _orders[counter] = orderBook[_outcome][_side][_price][
+                    Order memory order = orderBook[_outcome][_side][_price][
                         _index
                     ];
+                    _orders[counter].initialShares = order.initialShares;
+                    _orders[counter].remainingShares = order.remainingShares;
+                    _orders[counter].timestamp = order.timestamp;
+                    _orders[counter].totalCostOfFilledShares = order
+                        .currentTotalPrice;
+                    _orders[counter].price = _price;
+
                     counter++;
                 }
             }

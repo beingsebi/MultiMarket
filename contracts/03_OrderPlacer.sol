@@ -193,7 +193,7 @@ contract OrderPlacer is MarketCreator {
         BetOutcome _betOutcome,
         OrderSide _orderSide,
         address _user
-    ) external view returns (Order[] memory) {
+    ) external view returns (OrderDto[] memory) {
         require(
             _betOutcome == BetOutcome.Yes || _betOutcome == BetOutcome.No,
             "Invalid bet outcome"
