@@ -30,6 +30,8 @@ contract Market is MarketOrders {
             "Invalid winning outcome"
         );
 
+        require(!isResolved, "Market already resolved");
+
         isResolved = true;
 
         Order memory order = Order({
