@@ -33,8 +33,8 @@ const PlaceMarketOrderForm = ({ eventIndex, marketIndex }) => {
                     value={orderData.betOutcome}
                     onChange={handleBetOutcomeChange}
                 >
-                    <option value={0}>Buy</option>
-                    <option value={1}>Sell</option>
+                    <option value={0}>Yes</option>
+                    <option value={1}>No</option>
                 </select>
             </label>
             <label>

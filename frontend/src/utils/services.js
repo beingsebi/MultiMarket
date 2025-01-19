@@ -76,6 +76,7 @@ export const requestAccount = async () => {
     return accounts[0]; // Return the first account
   } catch (error) {
     console.error("Error requesting account:", error.message);
+    toast.error("Error requesting account. Please make sure to connect your wallet.");
     return null;
   }
 };
@@ -96,6 +97,7 @@ export const getBalances = async (address) => {
     };
   } catch (error) {
     console.error("Error fetching balance:", error);
+    toast.error(`Error fetching balance: ${error.reason}`);
     return null;
   }
 };
@@ -126,6 +128,7 @@ export const depositUSDC = async (amount) => {
     console.log("Deposit successful!");
   } catch (error) {
     console.error("Error during deposit:", error);
+    toast.error(`Error during deposit: ${error.reason}`);
     return error;
   }
 };
@@ -146,6 +149,7 @@ export const withdrawUSDC = async (amount) => {
     console.log("Withdrawal successful!");
   } catch (error) {
     console.error("Error during withdrawal:", error);
+    toast.error(`Error during withdrawal: ${error.reason}`);
     return error;
   }
 };
@@ -167,6 +171,7 @@ export const getAllEvents = async () => {
     return events;
   } catch (error) {
     console.error("Error fetching event details:", error);
+    toast.error(`Error fetching event details: ${error.reason}`);
     return [];
   }
 };
@@ -203,6 +208,7 @@ export const getEvent = async (eventIndex) => {
     };
   } catch (error) {
     console.error("Error fetching event details:", error);
+    toast.error(`Error fetching event details: ${error.reason}`);
     return null;
   }
 };
@@ -265,6 +271,7 @@ export const placeMarketOrder = async (eventIndex, marketIndex, betOutcome, orde
     console.log(`Transaction Hash: ${receipt.transactionHash}`);
   } catch (error) {
     console.error("Error placing market order:", error);
+    toast.error(`Error placing market order: ${error.reason}`);
   }
 };
 
@@ -291,6 +298,7 @@ export const getPositions = async (eventIndex, userAddress) => {
     return positions;
   } catch (error) {
     console.error("Error fetching positions:", error);
+    toast.error(`Error fetching positions: ${error.reason}`);
     return [];
   }
 };
@@ -320,6 +328,7 @@ export const getActiveOrders = async (eventIndex, marketIndex, betOutcome, order
     }));
   } catch (error) {
     console.error("Error fetching active orders:", error);
+    toast.error(`Error fetching active orders: ${error.reason}`);
     return [];
   }
 };
@@ -344,6 +353,7 @@ export const getCurrentPrice = async (eventIndex, marketIndex, betOutcome) => {
     };
   } catch (error) {
     console.error("Error fetching current price:", error);
+    toast.error(`Error fetching current price: ${error.reason}`);
     return null;
   }
 };

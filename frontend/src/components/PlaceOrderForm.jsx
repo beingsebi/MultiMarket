@@ -28,8 +28,8 @@ const PlaceOrderForm = ({ eventIndex, marketIndex }) => {
                     value={orderData.betOutcome}
                     onChange={handleBetOutcomeChange}
                 >
-                    <option value={0}>Buy</option>
-                    <option value={1}>Sell</option>
+                    <option value={0}>Yes</option>
+                    <option value={1}>No</option>
                 </select>
             </label>
             <label>
@@ -41,6 +41,7 @@ const PlaceOrderForm = ({ eventIndex, marketIndex }) => {
                     name="price"
                     value={orderData.price}
                     onChange={handleInputChange}
+                    placeholder="0.1"
                 />
             </label>
             <label>
@@ -48,6 +49,7 @@ const PlaceOrderForm = ({ eventIndex, marketIndex }) => {
                 <input
                     type="number"
                     name="shares"
+                    min="0" 
                     value={orderData.shares}
                     onChange={handleInputChange}
                 />
