@@ -232,7 +232,7 @@ const placeLimitOrder = async (eventIndex, marketIndex, betOutcome, price, share
     );
 
     console.log("Transaction sent. Waiting for confirmation...");
-    const receipt = await tx.wait();
+    await tx.wait();
 
     console.log(`Limit ${orderType === BUY_ORDER ? 'buy' : 'sell'} order placed successfully!`);
     toast.success(`Limit ${orderType === BUY_ORDER ? 'buy' : 'sell'} order placed successfully!`);
@@ -267,7 +267,7 @@ export const placeMarketOrder = async (eventIndex, marketIndex, betOutcome, orde
     );
 
     console.log("Transaction sent. Waiting for confirmation...");
-    const receipt = await tx.wait();
+    await tx.wait();
 
     console.log("Market order placed successfully!");
     toast.success("Market order placed successfully!");
@@ -370,7 +370,7 @@ export const createEvent = async (eventTitle, eventDescription) => {
     const tx = await MMContract.createEvent(eventTitle, eventDescription);
 
     console.log("Transaction sent. Waiting for confirmation...");
-    const receipt = await tx.wait(); // Wait for the transaction to be mined
+    await tx.wait(); // Wait for the transaction to be mined
     console.log("Event created successfully!");
 
     // Log the transaction hash and event creation details
@@ -381,5 +381,30 @@ export const createEvent = async (eventTitle, eventDescription) => {
   } catch (error) {
     console.error("Error creating event:", error);
     toast.error(`Error creating event: ${error.reason}`);
+  }
+};
+
+export const addMarket = async (eventIndex, marketTitle, marketDescription) => {
+  try {
+    const { MMContract } = await initializeContracts();
+    if (!MMContract) return;
+
+    console.log("Adding a new market...");
+
+    const tx = await MMContract.createMarket(eventIndex, marketTitle, marketDescription);
+
+    console.log("Transaction sent. Waiting for confirmation...");
+    await tx.wait(); // Wait for the transaction to be mined
+    console.log("Market added successfully!");
+
+    // Log the transaction hash and market addition details
+    console.log("Market Details:");
+    console.log(`  Event Index: ${eventIndex}`);
+    console.log(`  Market Title: ${marketTitle}`);
+    console.log(`  Market Description: ${marketDescription}`);
+    toast.success("Market added successfully!");
+  } catch (error) {
+    console.error("Error adding market:", error);
+    toast.error(`Error adding market: ${error.reason}`);
   }
 };

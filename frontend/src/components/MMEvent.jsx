@@ -6,11 +6,13 @@ import PlaceSellOrderForm from './PlaceSellOrderForm';
 import PlaceMarketOrderForm from './PlaceMarketOrderForm';
 import ActiveOrders from './ActiveOrders';
 import EventEmitter from "../utils/EventEmitter";
+import AddMarketForm from './AddMarketForm';
 
 const MMEvent = () => {
     const { eventIndex } = useParams();
     const [event, setEvent] = useState(null);
     const [positions, setPositions] = useState([]);
+    const [showAddMarketForm, setShowAddMarketForm] = useState(false);
 
     const fetchEvent = useCallback(async () => {
         const eventDetails = await getEvent(eventIndex);
@@ -24,6 +26,14 @@ const MMEvent = () => {
         const positions_req = await getPositions(eventIndex, userAddress);
         setPositions(positions_req);
     }, [eventIndex]);
+
+    const handleToggleAddMarketForm = () => {
+        setShowAddMarketForm(!showAddMarketForm);
+    };
+
+    const handleMarketAdded = () => {
+        fetchEvent();
+    };
 
     useEffect(() => {
         fetchEvent();
@@ -79,9 +89,16 @@ const MMEvent = () => {
                                 </>
                             )}
                         </div>
+                        <hr /> {/* Separator between markets */}
                     </li>
                 ))}
             </ul>
+            <button onClick={handleToggleAddMarketForm}>
+                {showAddMarketForm ? 'Hide Add Market Form' : 'Show Add Market Form'}
+            </button>
+            {showAddMarketForm && (
+                <AddMarketForm eventIndex={eventIndex} onMarketAdded={handleMarketAdded} />
+            )}
         </div>
     );
 };
