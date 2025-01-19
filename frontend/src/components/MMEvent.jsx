@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { requestAccount, getEvent, getPositions } from '../utils/services';
+import { requestAccount, getEvent, getPositions, resolveMarket } from '../utils/services';
 import PlaceOrderForm from './PlaceOrderForm';
 import PlaceSellOrderForm from './PlaceSellOrderForm';
 import PlaceMarketOrderForm from './PlaceMarketOrderForm';
@@ -33,6 +33,22 @@ const MMEvent = () => {
 
     const handleMarketAdded = () => {
         fetchEvent();
+    };
+
+    const handleResolveMarket = async (marketIndex) => {
+        const winningOutcome = prompt("Enter the winning outcome (Yes or No):");
+        const outcomeValue = winningOutcome.toLowerCase() === "yes" ? 0 : winningOutcome.toLowerCase() === "no" ? 1 : null;
+        
+        if (outcomeValue !== null) {
+            try {
+                await resolveMarket(eventIndex, marketIndex, outcomeValue);
+                fetchEvent();
+            } catch (error) {
+                console.error("Error resolving market:", error);
+            }
+        } else {
+            alert("Invalid input. Please enter 'Yes' or 'No'.");
+        }
     };
 
     useEffect(() => {
@@ -85,10 +101,16 @@ const MMEvent = () => {
                                 </>
                             ) : (
                                 <>
-                                    <p>Please connect your wallet to view positions.</p>
+                                    <p>No positions availalbile.</p>
                                 </>
                             )}
                         </div>
+                        <br />
+                        <strong>Resolved:</strong> {event.marketResolved[index] ? "Yes" : "Not yet"}
+                        <br />
+                        {!event.marketResolved[index] && (
+                            <button onClick={() => handleResolveMarket(index)}>Resolve Market</button>
+                        )}
                         <hr /> {/* Separator between markets */}
                     </li>
                 ))}

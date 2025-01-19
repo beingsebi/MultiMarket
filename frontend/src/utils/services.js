@@ -408,3 +408,25 @@ export const addMarket = async (eventIndex, marketTitle, marketDescription) => {
     toast.error(`Error adding market: ${error.reason}`);
   }
 };
+
+export const resolveMarket = async (eventIndex, marketIndex, winningOutcome) => {
+  try {
+    const { MMContract } = await initializeContracts();
+    if (!MMContract) return;
+
+    console.log("Resolving market...");
+
+    const tx = await MMContract.resolveMarket(eventIndex, marketIndex, winningOutcome);
+
+    console.log("Transaction sent. Waiting for confirmation...");
+    const receipt = await tx.wait();
+
+    console.log("Market resolved successfully!");
+    console.log(`Transaction Hash: ${receipt.transactionHash}`);
+    toast.success("Market resolved successfully!");
+  } catch (error) {
+    console.error("Error resolving market:", error);
+    toast.error(`Error resolving market: ${error.reason}`);   
+    throw error;
+  }
+};
