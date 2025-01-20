@@ -321,12 +321,11 @@ export const getActiveOrders = async (eventIndex, marketIndex, betOutcome, order
     );
 
     return activeOrders.map(order => ({
-      user: order.user,
       initialShares: order.initialShares.toString(),
       remainingShares: order.remainingShares.toString(),
       timestamp: new Date(order.timestamp * 1000).toLocaleString(),
-      isActive: order.isActive,
-      currentTotalPrice: ethers.utils.formatUnits(order.currentTotalPrice, 6)
+      totalCostOfFilledShares: ethers.utils.formatUnits(order.totalCostOfFilledShares, 6),
+      price: ethers.utils.formatUnits(order.price, 6)
     }));
   } catch (error) {
     console.error("Error fetching active orders:", error);

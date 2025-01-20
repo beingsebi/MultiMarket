@@ -54,12 +54,11 @@ const ActiveOrders = ({ marketIndex }) => {
       <ul>
         {orders.map((order, index) => (
           <li key={index}>
-            <p>User: {order.user}</p>
             <p>Initial Shares: {order.initialShares}</p>
             <p>Remaining Shares: {order.remainingShares}</p>
             <p>Timestamp: {order.timestamp}</p>
-            <p>Is Active: {order.isActive.toString()}</p>
-            <p>Current Total Price: {order.currentTotalPrice}</p>
+            <p>Total cost of filled shares: {order.totalCostOfFilledShares}</p>
+            <p>Current Price: {order.price}</p>
           </li>
         ))}
       </ul>
