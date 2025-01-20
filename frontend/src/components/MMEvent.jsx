@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { requestAccount, getEvent, getPositions, resolveMarket } from '../utils/services';
 import PlaceOrderForm from './PlaceOrderForm';
 import PlaceSellOrderForm from './PlaceSellOrderForm';
@@ -10,6 +10,7 @@ import AddMarketForm from './AddMarketForm';
 
 const MMEvent = () => {
     const { eventIndex } = useParams();
+    const navigate = useNavigate();
     const [event, setEvent] = useState(null);
     const [positions, setPositions] = useState([]);
     const [showAddMarketForm, setShowAddMarketForm] = useState(false);
@@ -78,6 +79,7 @@ const MMEvent = () => {
 
     return (
         <div>
+            <button onClick={() => navigate('/')}>Back to Events</button>
             <h1>{event.eventTitle}</h1>
             <p>{event.eventDescription}</p>
             <h2>Markets</h2>
