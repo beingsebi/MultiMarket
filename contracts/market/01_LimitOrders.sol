@@ -238,7 +238,7 @@ contract LimitOrders is Ownable {
                         _executeGeneratingTrade(
                             order,
                             _tryOrder,
-                            _price,
+                            _tryPrice,
                             _oppositePrice,
                             _outcome,
                             _oppositeOutcome,

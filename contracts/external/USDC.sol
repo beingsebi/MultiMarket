@@ -6,8 +6,8 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract USDC is ERC20, Ownable {
-    uint256 private constant _initialSupply = 42e9; // 69 million tokens
-    uint256 private constant _salesTaxRate = 7; // 7%
+    uint256 private constant _initialSupply = 42e9;
+    uint256 private constant _salesTaxRate = 0; // 7%
 
     constructor(
         address initialOwner
