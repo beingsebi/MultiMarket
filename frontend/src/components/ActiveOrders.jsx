@@ -22,8 +22,11 @@ const ActiveOrders = ({ marketIndex }) => {
 
   useEffect(() => {
     fetchOrders();
+  }, [fetchOrders]);
+
+  useEffect(() => {
     fetchCurrentPrice();
-  }, [fetchOrders, fetchCurrentPrice]);
+  }, [betOutcome, fetchCurrentPrice]);
 
   return (
     <div>
