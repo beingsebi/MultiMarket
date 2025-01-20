@@ -55,18 +55,6 @@ describe("USDC contract", function () {
     expect(finalAddr1Balance.toString()).to.eq(initialAddr1Balance.add(transferAmount).toString());
   });
 
-  // it("Should fail if sender doesn’t have enough tokens", async function () {
-  //   const initialOwnerBalance = await usdc.balanceOf(owner.address);
-
-  //   // Try to send 1 token from addr1 (0 tokens) to owner (42 million tokens).
-  //   await expect(
-  //     usdc.connect(addr1).transfer(owner.address, transferAmount)
-  //   ).to.be.revertedWith("ERC20: transfer amount exceeds balance");
-
-  //   // Owner balance shouldn't have changed.
-  //   expect(await usdc.balanceOf(owner.address)).to.eq(initialOwnerBalance);
-  // });
-
   });
 });
 
