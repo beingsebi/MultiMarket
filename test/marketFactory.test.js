@@ -19,21 +19,17 @@ describe("MarketFactory contract", function () {
     owner = signers[0];
 
     USDC = await ethers.getContractFactory("USDC");
-    usdc = await USDC.deploy(owner.address); // Assuming the constructor takes the owner address
+    usdc = await USDC.deploy(owner.address); 
     await usdc.deployed();
 
-
-    // Deploy the MarketFactory contract
     MarketFactory = await ethers.getContractFactory("MarketFactory");
     marketFactory = await MarketFactory.deploy();
     await marketFactory.deployed();
-
 
     expect(marketFactory.address).to.not.equal(ethers.constants.AddressZero);
   });
 
   describe("Market creation", function () {
-    
     it("Should create a new market contract", async function () {
       const marketAddress = await marketFactory.createMarket(
         owner.address,
@@ -41,11 +37,10 @@ describe("MarketFactory contract", function () {
         granularity,
         marketTitle,
         marketDescription,
-        usdc.address // Pass the address of the deployed USDC contract
+        usdc.address 
       );
 
-    expect(marketAddress).to.not.equal(ethers.constants.AddressZero);
-
+      expect(marketAddress).to.not.equal(ethers.constants.AddressZero);
     });
   });
 });
