@@ -210,4 +210,53 @@ describe("OrderPlacer contract", function () {
     expect(orderPlaced).to.be.true;
   });
 
+  it("matches a limit order with a market order", async function () {
+    await createEventAndMarket(orderPlacer, addr1);
+
+    const shares = 10;
+    const price = ethers.utils.parseUnits("0.6", 6);
+
+    const tx = await orderPlacer
+      .connect(addr1)
+      .placeLimitOrder(0, 0, BetOutcome.YES, OrderSide.BUY, price, shares);
+    await tx.wait();
+
+    const tx2 = await orderPlacer
+      .connect(addr2)
+      .placeMarketOrderByShares(0, 0, BetOutcome.NO, OrderSide.BUY, shares);
+    await tx2.wait();
+
+    const receipt = await tx2.wait();
+
+    const marketOrderEvent = receipt.events.find(
+      (event) => event.event === "MarketOrderPlaced"
+    );
+    const filledShares = marketOrderEvent.args.filledShares.toNumber();
+    const totalCostOfFilledShares = marketOrderEvent.args.totalCostOfFilledShares.toNumber();
+    const unfilledShares = marketOrderEvent.args.unfilledShares.toNumber();
+
+    expect(filledShares).to.equal(shares);
+    expect(totalCostOfFilledShares).to.equal(ethers.utils.parseUnits("0.4", 6).mul(shares).toNumber());
+    expect(unfilledShares).to.equal(0);
+  });
+
+  it("can cancel order", async function () {
+    await createEventAndMarket(orderPlacer, addr1);
+
+    const shares = 10;
+    const price = ethers.utils.parseUnits("0.6", 6);
+
+    const initialBalance = await orderPlacer.freeBalances(addr1.address);
+
+    const tx = await orderPlacer.connect(addr1).placeLimitOrder(0, 0, BetOutcome.YES, OrderSide.BUY, price, shares);
+    await tx.wait();
+
+    expect(await orderPlacer.freeBalances(addr1.address)).to.equal(initialBalance.sub(price.mul(shares)));
+    
+    const tx2 = await orderPlacer.connect(addr1).cancelOrder(0, 0, BetOutcome.YES, OrderSide.BUY, price, 0);
+    await tx2.wait();
+
+    expect(await orderPlacer.freeBalances(addr1.address)).to.equal(initialBalance);
+  });
+
 });
