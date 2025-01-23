@@ -5,6 +5,8 @@ pragma solidity >=0.8.28 <0.9.0;
 import "../utils/OrderDefinitions.sol";
 
 interface IEvent {
+    function markets() external view returns (address[] memory);
+
     function addMarket(
         string memory _marketTitle,
         string memory _marketDescription
