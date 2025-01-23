@@ -143,6 +143,12 @@ export const withdrawUSDC = async (amount) => {
       console.error("Contract not initialized!");
       return;
     }
+    const gas = await MMContract.estimateGas.withdraw(parsedAmount);
+    if (gas.gt(ethers.BigNumber.from(100000))) {
+      console.error("Gas limit is too high! gas= ", gas.toString());
+      toast.error("Gas limit is too high! Please try again later.");
+      return;
+    }
 
     console.log(`Withdrawing ${parsedAmount} USDC from the MultiMarket contract...`);
     const withdrawTx = await MMContract.withdraw(parsedAmount, { gasLimit: 100000 });
