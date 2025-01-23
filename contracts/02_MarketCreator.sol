@@ -218,6 +218,11 @@ contract MarketCreator is TokenHolder {
             msg.sender == eventToOwner[events[_eventIndex]],
             "Only the event owner can resolve markets"
         );
+        require(
+            _winningOutcome == BetOutcome.Yes ||
+                _winningOutcome == BetOutcome.No,
+            "Invalid winning outcome"
+        );
         IEvent _event = IEvent(events[_eventIndex]);
         _event.resolveMarket(_marketIndex, _winningOutcome);
         address _market = _event.getMarketAddress(_marketIndex);
