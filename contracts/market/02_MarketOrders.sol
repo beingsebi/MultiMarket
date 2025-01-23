@@ -300,7 +300,7 @@ contract MarketOrders is LimitOrders {
         for (
             uint _price = 0;
             _price <= 10 ** decimals;
-            _price += 10 ** granularity
+            _price += 10 ** (decimals - granularity)
         ) {
             for (
                 uint _index = 0;
@@ -322,7 +322,7 @@ contract MarketOrders is LimitOrders {
         for (
             uint _price = 0;
             _price <= 10 ** decimals;
-            _price += 10 ** granularity
+            _price += 10 ** (decimals - granularity)
         ) {
             for (
                 uint _index = 0;

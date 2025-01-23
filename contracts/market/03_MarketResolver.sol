@@ -51,7 +51,7 @@ contract Market is MarketOrders {
         for (
             uint _price = 0;
             _price <= 10 ** decimals;
-            _price += 10 ** granularity
+            _price += 10 ** (decimals - granularity)
         ) {
             for (
                 uint _index = 0;
