@@ -117,13 +117,13 @@ export const depositUSDC = async (amount) => {
 
     if (ethers.BigNumber.from(allowance) < ethers.BigNumber.from(parsedAmount)) {
       console.log(`Approving contract to spend ${parsedAmount} USDC...`);
-      const approveTx = await usdcContract.approve(MM_CONTRACT_ADDRESS, parsedAmount);
+      const approveTx = await usdcContract.approve(MM_CONTRACT_ADDRESS, parsedAmount, { gasLimit: 100000 });
       await approveTx.wait();
       console.log("Approval transaction confirmed.");
     }
 
     console.log(`Depositing ${parsedAmount} USDC to the MultiMarket contract...`);
-    const depositTx = await MMContract.deposit(parsedAmount);
+    const depositTx = await MMContract.deposit(parsedAmount, { gasLimit: 100000 });
     await depositTx.wait();
     console.log("Deposit successful!");
       toast.success("Deposit successful!");
@@ -145,7 +145,7 @@ export const withdrawUSDC = async (amount) => {
     }
 
     console.log(`Withdrawing ${parsedAmount} USDC from the MultiMarket contract...`);
-    const withdrawTx = await MMContract.withdraw(parsedAmount);
+    const withdrawTx = await MMContract.withdraw(parsedAmount, { gasLimit: 100000 });
     await withdrawTx.wait();
     console.log("Withdrawal successful!");
     toast.success("Withdrawal successful!");
