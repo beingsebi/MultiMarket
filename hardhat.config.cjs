@@ -1,6 +1,7 @@
 require('dotenv').config();
 require("@nomiclabs/hardhat-ethers");
 require("hardhat-contract-sizer");
+require("@nomicfoundation/hardhat-chai-matchers")
 
 const { API_URL, PRIVATE_KEY } = process.env;
 
@@ -17,10 +18,10 @@ module.exports = {
   },
   defaultNetwork: "sepolia",
   networks: {
-    hardhat: {},
+    hardhat: {    },
     sepolia: {
-      url: API_URL,
-      accounts: [`0x${PRIVATE_KEY}`]
+    url: API_URL,
+    accounts: [`0x${PRIVATE_KEY}`]
     }
   },
   // contractSizer: {

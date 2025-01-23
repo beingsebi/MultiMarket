@@ -11,19 +11,21 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "@nomicfoundation/hardhat-chai-matchers": "^2.0.8",
+    "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
-    "chai": "^5.1.2",
+    "chai": "^4.2.0",
     "ethers": "^5.7.2",
     "hardhat": "^2.22.17",
     "hardhat-console": "^1.0.0",
-    "hardhat-contract-sizer": "^2.10.0",
-    "mocha": "^11.0.1"
+    "hardhat-contract-sizer": "^2.10.0"
   },
   "dependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^1.0.6",
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@openzeppelin/contracts": "^5.1.0",
+    "chai": "^4.2.0",
     "dotenv": "^16.4.7",
     "esm": "^3.2.25",
-    "ethereum-waffle": "^4.0.10"
+    "ethers": "^5.7.2"
   }
 }

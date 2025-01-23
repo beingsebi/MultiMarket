@@ -13,7 +13,7 @@ describe("OrderPlacer contract", function () {
   let MarketFactory;
   let marketFactory;
   let owner;
-  let addr1;
+  let addr1, addr2;
 
   const eventCreationFee = ethers.utils.parseUnits("10", 6);
   const marketCreationFee = ethers.utils.parseUnits("5", 6);
@@ -33,6 +33,7 @@ describe("OrderPlacer contract", function () {
     const signers = await ethers.getSigners();
     owner = signers[0];
     addr1 = signers[1];
+    addr2 = signers[2];
 
     // Deploy the USDC contract
     USDC = await ethers.getContractFactory("USDC");
@@ -83,6 +84,10 @@ describe("OrderPlacer contract", function () {
     await usdc.transfer(addr1.address, depositAmount);
     await usdc.connect(addr1).approve(orderPlacer.address, depositAmount);
     await orderPlacer.connect(addr1).deposit(depositAmount);
+
+    await usdc.transfer(addr2.address, depositAmount);
+    await usdc.connect(addr2).approve(orderPlacer.address, depositAmount);
+    await orderPlacer.connect(addr2).deposit(depositAmount);
   });
 
   async function createEventAndMarket(orderPlacer, addr1) {
@@ -139,5 +144,70 @@ describe("OrderPlacer contract", function () {
     expect(unfilledShares).to.equal(shares);
   });
 
-  // Additional tests for retrieving and canceling orders can be added similarly
+  it("Cannot sell more shares than owned free shares", async function () {
+    await createEventAndMarket(orderPlacer, addr1);
+
+    await expect(
+      orderPlacer.connect(addr1).placeLimitOrder(0, 0, BetOutcome.YES, OrderSide.SELL, ethers.utils.parseUnits("1", 6), 1)
+    ).to.be.revertedWith("Insufficient free shares");
+  });
+
+  it("match two opposite limit orders", async function () {
+    await createEventAndMarket(orderPlacer, addr1);
+
+    // Place first limit order
+    const shares = 10;
+    const price = ethers.utils.parseUnits("0.6", 6);
+    const opPrice = ethers.utils.parseUnits("0.4", 6);
+
+    const tx = await orderPlacer
+      .connect(addr1)
+      .placeLimitOrder(0, 0, BetOutcome.YES, OrderSide.BUY, price, shares);
+    await tx.wait();
+
+    const positionsBefore = await orderPlacer.getPositions(0, addr1.address);
+    expect(positionsBefore.map(p => p.toString())).to.deep.equal(["0", "0", "0", "0"]); // No match yet,
+  
+    // Place second limit order  
+    const tx2 = await orderPlacer
+      .connect(addr2)
+      .placeLimitOrder(0, 0, BetOutcome.NO, OrderSide.BUY, opPrice, shares);
+    await tx2.wait();
+
+    const positionsAfter = await orderPlacer.getPositions(0, addr1.address);
+    expect(positionsAfter.map(p => p.toString())).to.deep.equal(["10", "0", "0", "0"]);
+
+    const positionsAfterAddr2 = await orderPlacer.getPositions(0, addr2.address);
+    expect(positionsAfterAddr2.map(p => p.toString())).to.deep.equal(["0", "0", "10", "0"]);
+  });
+
+  it("can sell just brought shares", async function () {
+    await createEventAndMarket(orderPlacer, addr1);
+
+    // Place first limit order
+    const shares = 10;
+    const price = ethers.utils.parseUnits("0.6", 6);
+    const opPrice = ethers.utils.parseUnits("0.4", 6);
+
+    const tx = await orderPlacer
+      .connect(addr1)
+      .placeLimitOrder(0, 0, BetOutcome.YES, OrderSide.BUY, price, shares);
+    await tx.wait();
+  
+    // Place second limit order  
+    const tx2 = await orderPlacer
+      .connect(addr2)
+      .placeLimitOrder(0, 0, BetOutcome.NO, OrderSide.BUY, opPrice, shares);
+    await tx2.wait();
+
+    const tx3 = await orderPlacer
+      .connect(addr1)
+      .placeLimitOrder(0, 0, BetOutcome.YES, OrderSide.SELL, price, shares);
+    const receipt = await tx3.wait();
+    const orderPlaced = receipt.events.some(
+      (event) => event.event === "LimitOrderPlaced"
+    );
+    expect(orderPlaced).to.be.true;
+  });
+
 });
