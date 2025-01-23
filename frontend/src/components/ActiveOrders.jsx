@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import { requestAccount, getActiveOrders, getCurrentPrice } from '../utils/services';
+import { requestAccount, getActiveOrders, getCurrentPrice, cancelOrder } from '../utils/services';
 
 const ActiveOrders = ({ marketIndex }) => {
   const { eventIndex } = useParams();
@@ -27,6 +27,12 @@ const ActiveOrders = ({ marketIndex }) => {
   useEffect(() => {
     fetchCurrentPrice();
   }, [betOutcome, fetchCurrentPrice]);
+
+  const handleCancelOrder = async (order, index) => {
+    await cancelOrder(eventIndex, marketIndex, betOutcome, orderType, order.price, index);
+    fetchOrders();
+    fetchCurrentPrice();
+  };
 
   return (
     <div>
@@ -62,6 +68,7 @@ const ActiveOrders = ({ marketIndex }) => {
             <p>Timestamp: {order.timestamp}</p>
             <p>Total cost of filled shares: {order.totalCostOfFilledShares}</p>
             <p>Current Price: {order.price}</p>
+            <button onClick={() => handleCancelOrder(order, order.indexInOrderBook)}>Cancel Order</button>
           </li>
         ))}
       </ul>

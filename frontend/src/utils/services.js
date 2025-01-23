@@ -325,7 +325,8 @@ export const getActiveOrders = async (eventIndex, marketIndex, betOutcome, order
       remainingShares: order.remainingShares.toString(),
       timestamp: new Date(order.timestamp * 1000).toLocaleString(),
       totalCostOfFilledShares: ethers.utils.formatUnits(order.totalCostOfFilledShares, 6),
-      price: ethers.utils.formatUnits(order.price, 6)
+      price: ethers.utils.formatUnits(order.price, 6),
+      indexInOrderBook: order.index.toString(),
     }));
   } catch (error) {
     console.error("Error fetching active orders:", error);
@@ -427,5 +428,33 @@ export const resolveMarket = async (eventIndex, marketIndex, winningOutcome) => 
     console.error("Error resolving market:", error);
     toast.error(`Error resolving market: ${error.reason}`);   
     throw error;
+  }
+};
+
+export const cancelOrder = async (eventIndex, marketIndex, outcome, side, price, orderIndex) => {
+  try {
+    const { MMContract } = await initializeContracts();
+    if (!MMContract) return;
+
+    console.log("Canceling order...");
+
+    const tx = await MMContract.cancelOrder(
+      eventIndex,
+      marketIndex,
+      outcome,
+      side,
+      ethers.utils.parseUnits(price.toString(), 6),
+      orderIndex
+    );
+
+    console.log("Transaction sent. Waiting for confirmation...");
+    await tx.wait();
+
+    console.log("Order canceled successfully!");
+    toast.success("Order canceled successfully!");
+  } catch (error) {
+    console.error("Error canceling order:", error);
+    toast.error(`Error canceling order: ${error.reason}`);
+    return error;
   }
 };

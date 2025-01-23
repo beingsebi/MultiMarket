@@ -342,7 +342,8 @@ contract MarketOrders is LimitOrders {
                     _orders[counter].totalCostOfFilledShares = order
                         .currentTotalPrice;
                     _orders[counter].price = _price;
-
+                    _orders[counter].index = _index;
+                    
                     counter++;
                 }
             }

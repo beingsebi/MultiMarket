@@ -13,7 +13,16 @@ function ConnectWalletButton({ setAccount }) {
     }
   };
 
-  return <button onClick={connectWallet}>Connect Web3 Wallet</button>;
+  return (
+    <button
+      onClick={(e) => {
+        e.preventDefault();
+        connectWallet();
+      }}
+    >
+      Connect Web3 Wallet
+    </button>
+  );
 }
 
 export default ConnectWalletButton;

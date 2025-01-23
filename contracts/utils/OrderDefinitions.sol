@@ -34,4 +34,5 @@ struct OrderDto {
     uint timestamp;
     uint totalCostOfFilledShares;
     uint price;
+    uint index;
 }
