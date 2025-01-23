@@ -242,4 +242,10 @@ contract Event is Ownable {
         IMarket _market = IMarket(markets[_marketIndex]);
         return _market.getCurrentPrice(_betOutcome);
     }
+
+    function getMarketAddress(
+        uint marketIndex
+    ) external view returns (address) {
+        return markets[marketIndex];
+    }
 }

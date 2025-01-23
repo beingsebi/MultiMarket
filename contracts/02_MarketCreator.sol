@@ -220,7 +220,7 @@ contract MarketCreator is TokenHolder {
         );
         IEvent _event = IEvent(events[_eventIndex]);
         _event.resolveMarket(_marketIndex, _winningOutcome);
-        address _market = _event.markets()[_marketIndex];
+        address _market = _event.getMarketAddress(_marketIndex);
         reservedBalances[_market] += freeBalances[_market];
         freeBalances[_market] = 0;
     }
