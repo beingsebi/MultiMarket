@@ -9,6 +9,8 @@ let cachedSigner = null;
 let cachedMMContract = null;
 let cachedUSDCContract = null;
 let isRequestingAccounts = false;
+let isRequestingAccount = false;
+let cachedAccount = null;
 
 const BUY_ORDER = 0;
 const SELL_ORDER = 1;
@@ -70,14 +72,23 @@ const initializeContracts = async () => {
 };
 
 export const requestAccount = async () => {
+  if (isRequestingAccount) {
+    return cachedAccount; // Return cached account if already requesting
+  }
+
+  isRequestingAccount = true;
+
   try {
     const { provider } = await getProviderAndSigner();
     const accounts = await provider.send("eth_requestAccounts", []);
-    return accounts[0]; // Return the first account
+    cachedAccount = accounts[0]; // Cache the first account
+    return cachedAccount;
   } catch (error) {
-    console.error("Error requesting account:", error.message);
-    // toast.error("Error requesting account. Please make sure to connect your wallet.");
+    console.error("Error requesting account:", error); // Log the full error object for debugging
+    toast.error("Error requesting account. Please make sure to connect your wallet."); // Display a user-friendly error message
     return null;
+  } finally {
+    isRequestingAccount = false;
   }
 };
 
@@ -141,12 +152,6 @@ export const withdrawUSDC = async (amount) => {
     const { MMContract } = await initializeContracts();
     if (!MMContract) {
       console.error("Contract not initialized!");
-      return;
-    }
-    const gas = await MMContract.estimateGas.withdraw(parsedAmount);
-    if (gas.gt(ethers.BigNumber.from(100000))) {
-      console.error("Gas limit is too high! gas= ", gas.toString());
-      toast.error("Gas limit is too high! Please try again later.");
       return;
     }
 
