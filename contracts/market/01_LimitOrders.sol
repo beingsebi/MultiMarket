@@ -209,6 +209,14 @@ contract LimitOrders is Ownable {
                         _outcome
                     );
 
+                    if (_tryPrice != _price) {
+                        tokenHolder.transferFromReserved(
+                            _tryOrder.user,
+                            _tryOrder.user,
+                            _matchedShares * (_price - _tryPrice)
+                        );
+                    }
+
                     _checkAndUpdateOrderStatus(order);
                     _checkAndUpdateOrderStatus(_tryOrder);
                 }
@@ -244,6 +252,14 @@ contract LimitOrders is Ownable {
                             _oppositeOutcome,
                             _matchedShares
                         );
+
+                        if (_tryPrice != _price) {
+                            tokenHolder.transferFromReserved(
+                                _tryOrder.user,
+                                _tryOrder.user,
+                                _matchedShares * (_price - _tryPrice)
+                            );
+                        }
 
                         _checkAndUpdateOrderStatus(order);
                         _checkAndUpdateOrderStatus(_tryOrder);

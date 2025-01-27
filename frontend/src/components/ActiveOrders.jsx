@@ -63,11 +63,11 @@ const ActiveOrders = ({ marketIndex }) => {
       <ul>
         {orders.map((order, index) => (
           <li key={index}>
+            <p>Price: {order.price}</p>
             <p>Initial Shares: {order.initialShares}</p>
             <p>Remaining Shares: {order.remainingShares}</p>
-            <p>Timestamp: {order.timestamp}</p>
             <p>Total cost of filled shares: {order.totalCostOfFilledShares}</p>
-            <p>Current Price: {order.price}</p>
+            <p>Timestamp: {order.timestamp}</p>
             <button onClick={() => handleCancelOrder(order, order.indexInOrderBook)}>Cancel Order</button>
           </li>
         ))}

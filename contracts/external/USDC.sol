@@ -11,7 +11,7 @@ contract USDC is ERC20, Ownable {
 
     constructor(
         address initialOwner
-    ) ERC20("Eggplant", "EGGP") Ownable(msg.sender) {
+    ) ERC20("USDC Token", "USDC") Ownable(msg.sender) {
         _mint(initialOwner, _initialSupply * 10 ** decimals());
         _mint(
             address(0xdD2FD4581271e230360230F9337D5c0430Bf44C0),
