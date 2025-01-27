@@ -215,7 +215,7 @@ contract MarketCreator is TokenHolder {
     ) external {
         require(_eventIndex < events.length, "Invalid event index");
         require(
-            msg.sender == eventToOwner[events[_eventIndex]],
+            eventToOwner[events[_eventIndex]] == msg.sender,
             "Only the event owner can resolve markets"
         );
         require(
